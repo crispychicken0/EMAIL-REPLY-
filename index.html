@@ -28,7 +28,7 @@
         }
         
         .header {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            background: linear-gradient(135deg, #ee5a24 0%, #ff6b6b 100%);
             color: white;
             padding: 30px;
             text-align: center;
@@ -48,22 +48,25 @@
             display: flex;
             background: #f8f9fa;
             border-bottom: 1px solid #dee2e6;
+            flex-wrap: wrap;
         }
         
         .tab {
             flex: 1;
+            min-width: 150px;
             padding: 20px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 600;
             color: #495057;
+            border-bottom: 3px solid transparent;
         }
         
         .tab.active {
             background: white;
             color: #ee5a24;
-            border-bottom: 3px solid #ee5a24;
+            border-bottom-color: #ee5a24;
         }
         
         .tab:hover {
@@ -122,6 +125,7 @@
             transition: transform 0.3s ease;
             display: inline-block;
             margin-right: 10px;
+            margin-bottom: 10px;
         }
         
         .btn:hover {
@@ -266,55 +270,174 @@
             margin-bottom: 15px;
         }
         
-        .appeal-templates {
+        .email-templates {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
-            margin-top: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
         }
         
-        .appeal-card {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            border-left: 5px solid #2196f3;
-            transition: transform 0.3s ease;
-            height: 100%;
+        .email-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         
-        .appeal-card:hover {
+        .email-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
         }
         
-        .appeal-title {
+        .email-header {
+            background: linear-gradient(135deg, #ee5a24 0%, #ff6b6b 100%);
+            color: white;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .email-platform {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .email-title {
+            font-size: 1.3rem;
             font-weight: 700;
-            color: #2196f3;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
+            margin-bottom: 8px;
         }
         
-        .appeal-description {
-            color: #495057;
-            margin-bottom: 15px;
-            line-height: 1.6;
+        .email-subject {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-style: italic;
         }
         
-        .appeal-button {
+        .email-body {
+            padding: 25px;
+        }
+        
+        .email-content {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            border-left: 4px solid #ee5a24;
+        }
+        
+        .email-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .email-date {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .email-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .btn-email {
             background: linear-gradient(135deg, #2196f3 0%, #0d47a1 100%);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-radius: 8px;
             cursor: pointer;
-            width: 100%;
             font-weight: 600;
             transition: transform 0.3s ease;
+            width: 100%;
+            margin-top: 15px;
         }
         
-        .appeal-button:hover {
+        .btn-email:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .quick-action {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #ee5a24;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .quick-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .quick-action-icon {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .quick-action-title {
+            font-weight: 700;
+            color: #ee5a24;
+            margin-bottom: 5px;
+        }
+        
+        .quick-action-desc {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-top: 4px solid #ee5a24;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ee5a24;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #6c757d;
         }
         
         .notification {
@@ -373,78 +496,73 @@
             background: #f8f9fa;
         }
         
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-card {
-            background: white;
+        .evidence-upload {
+            background: #f8f9fa;
             border-radius: 10px;
             padding: 20px;
+            margin-top: 20px;
+            border: 2px dashed #dee2e6;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            border-top: 4px solid #ee5a24;
+            transition: border-color 0.3s ease;
         }
         
-        .stat-value {
+        .evidence-upload:hover {
+            border-color: #ee5a24;
+        }
+        
+        .evidence-upload.dragover {
+            background: #fff8f8;
+            border-color: #ee5a24;
+        }
+        
+        .evidence-upload-icon {
             font-size: 2.5rem;
-            font-weight: 700;
-            color: #ee5a24;
-            margin-bottom: 10px;
+            color: #dee2e6;
+            margin-bottom: 15px;
         }
         
-        .stat-label {
-            font-size: 1rem;
+        .evidence-upload-text {
             color: #6c757d;
+            margin-bottom: 15px;
         }
         
-        .timeline {
-            position: relative;
-            padding-left: 30px;
-            margin: 30px 0;
+        .evidence-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
         }
         
-        .timeline::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 10px;
-            height: 100%;
-            width: 2px;
-            background: #e9ecef;
-        }
-        
-        .timeline-item {
-            position: relative;
-            margin-bottom: 25px;
-            padding-left: 20px;
-        }
-        
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            top: 5px;
-            left: -30px;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #ee5a24;
-        }
-        
-        .timeline-date {
-            font-weight: 600;
-            color: #ee5a24;
-            margin-bottom: 5px;
-        }
-        
-        .timeline-content {
-            background: #f8f9fa;
-            padding: 15px;
+        .evidence-item {
+            background: white;
             border-radius: 8px;
-            border-left: 3px solid #ee5a24;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .evidence-item-icon {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ee5a24;
+            color: white;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .evidence-item-name {
+            font-size: 0.9rem;
+            color: #495057;
+        }
+        
+        .evidence-item-remove {
+            margin-left: 10px;
+            color: #dc3545;
+            cursor: pointer;
         }
         
         @media (max-width: 768px) {
@@ -473,12 +591,16 @@
                 margin-top: 10px;
             }
             
-            .appeal-templates {
+            .email-templates {
                 grid-template-columns: 1fr;
             }
             
             .stats-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                flex-direction: column;
             }
         }
     </style>
@@ -494,7 +616,7 @@
             <div class="tab active" onclick="switchTab('dashboard')">Dashboard</div>
             <div class="tab" onclick="switchTab('claims')">Active Claims</div>
             <div class="tab" onclick="switchTab('dispute')">Submit Dispute</div>
-            <div class="tab" onclick="switchTab('appeals')">Appeal Templates</div>
+            <div class="tab" onclick="switchTab('templates')">Email Templates</div>
             <div class="tab" onclick="switchTab('legal')">Legal References</div>
         </div>
         
@@ -521,6 +643,24 @@
                 </div>
             </div>
             
+            <div class="quick-actions">
+                <div class="quick-action" onclick="switchTab('dispute'); document.getElementById('claim-id').value = 'CLM-2023-7845';">
+                    <div class="quick-action-icon">📝</div>
+                    <div class="quick-action-title">Quick Dispute</div>
+                    <div class="quick-action-desc">Submit a new dispute claim</div>
+                </div>
+                <div class="quick-action" onclick="switchTab('templates'); document.getElementById('load-example').value = 'noon-missing';">
+                    <div class="quick-action-icon">✉️</div>
+                    <div class="quick-action-title">Email Template</div>
+                    <div class="quick-action-desc">Use pre-written email examples</div>
+                </div>
+                <div class="quick-action" onclick="generateDisputeLetter();">
+                    <div class="quick-action-icon">📄</div>
+                    <div class="quick-action-title">Generate Letter</div>
+                    <div class="quick-action-desc">Create formal dispute letter</div>
+                </div>
+            </div>
+            
             <div class="claim-card">
                 <div class="claim-header">
                     <div class="claim-id">Recent Claim: #CLM-2023-7845</div>
@@ -542,36 +682,14 @@
                     <h4>Recommended Actions</h4>
                     <p>Based on our analysis, this claim has a high chance of success if you provide delivery evidence.</p>
                     <div class="evidence-item">
-                        <div class="evidence-icon">📋</div>
+                        <div class="evidence-icon">📹</div>
                         <div>Submit delivery confirmation report</div>
                     </div>
                     <div class="evidence-item">
                         <div class="evidence-icon">📷</div>
                         <div>Attach photos of delivered order</div>
                     </div>
-                    <button class="btn">Submit Dispute Now</button>
-                </div>
-            </div>
-            
-            <div class="timeline">
-                <h3>Recent Dispute History</h3>
-                <div class="timeline-item">
-                    <div class="timeline-date">2023-10-01</div>
-                    <div class="timeline-content">
-                        <strong>Dispute #DSP-2023-7123</strong> - Claim for missing items resolved in restaurant's favor. AED 25.00 recovered.
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-date">2023-09-28</div>
-                    <div class="timeline-content">
-                        <strong>Dispute #DSP-2023-6987</strong> - Partial approval. 50% of claim amount (AED 10.00) recovered.
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-date">2023-09-25</div>
-                    <div class="timeline-content">
-                        <strong>Dispute #DSP-2023-6854</strong> - Claim rejected after providing video evidence of full delivery.
-                    </div>
+                    <button class="btn" onclick="switchTab('dispute'); document.getElementById('claim-id').value = 'CLM-2023-7845';">Submit Dispute Now</button>
                 </div>
             </div>
         </div>
@@ -617,41 +735,7 @@
                 <div style="display: flex; gap: 10px; margin-top: 20px;">
                     <button class="btn btn-danger" onclick="submitDispute('CLM-2023-7845')">Submit Dispute</button>
                     <button class="btn btn-secondary">View Details</button>
-                </div>
-            </div>
-            
-            <div class="claim-card">
-                <div class="claim-header">
-                    <div class="claim-id">Claim #CLM-2023-7844</div>
-                    <div class="claim-status status-disputed">Under Review</div>
-                </div>
-                
-                <div class="claim-details">
-                    <p><strong>Platform:</strong> Careem</p>
-                    <p><strong>Order Number:</strong> CR65G4H2J1K9L3P</p>
-                    <p><strong>Customer:</strong> Fatima Al Mansoori</p>
-                    <p><strong>Restaurant:</strong> Crispy Chicken - Khalidiyah</p>
-                    <p><strong>Claim Amount:</strong> AED 22.00</p>
-                    <p><strong>Reason:</strong> Spilled/damaged - Outlet</p>
-                    <p><strong>Dispute Date:</strong> 2023-10-04 09:15:00</p>
-                    <p><strong>Expected Response:</strong> Within 3-5 business days</p>
-                </div>
-                
-                <div class="evidence-section">
-                    <h4>Submitted Evidence</h4>
-                    <div class="evidence-item">
-                        <div class="evidence-icon">📷</div>
-                        <div>Photos showing undamaged packaging</div>
-                    </div>
-                    <div class="evidence-item">
-                        <div class="evidence-icon">📄</div>
-                        <div>Quality control inspection report</div>
-                    </div>
-                </div>
-                
-                <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button class="btn btn-secondary">Add Evidence</button>
-                    <button class="btn">Contact Support</button>
+                    <button class="btn btn-secondary" onclick="switchTab('templates'); document.getElementById('load-example').value = 'noon-missing';">Use Email Template</button>
                 </div>
             </div>
         </div>
@@ -662,6 +746,17 @@
             <div id="dispute-notification"></div>
             
             <form id="dispute-form">
+                <div class="form-group">
+                    <label>Load Example (Optional)</label>
+                    <select id="load-example" onchange="loadExample(this.value)">
+                        <option value="">Select an example template</option>
+                        <option value="noon-missing">Noon - Missing Item</option>
+                        <option value="careem-spilled">Careem - Spilled/Damaged</option>
+                        <option value="careem-wrong">Careem - Wrong Item</option>
+                    </select>
+                    <button type="button" class="btn btn-secondary" onclick="clearExample()" style="margin-left: 10px;">Clear Example</button>
+                </div>
+                
                 <div class="form-group">
                     <label>Claim ID <span style="color: #ee5a24;">*</span></label>
                     <input type="text" id="claim-id" placeholder="e.g. CLM-2023-7845" required>
@@ -712,9 +807,19 @@
                 </div>
                 
                 <div class="form-group">
+                    <label>Request Details <span style="color: #ee5a24;">*</span></label>
+                    <textarea id="request-details" rows="3" placeholder="Specify what you are requesting (e.g., reversal of deduction)" required></textarea>
+                </div>
+                
+                <div class="form-group">
                     <label>Supporting Evidence <span style="color: #ee5a24;">*</span></label>
-                    <input type="file" id="evidence" multiple accept="image/*,video/*,.pdf" required>
-                    <small style="color: #6c757d;">Upload photos, videos, or documents that prove your case</small>
+                    <div class="evidence-upload" id="evidence-upload">
+                        <div class="evidence-upload-icon">📎</div>
+                        <div class="evidence-upload-text">Drag & drop files here or click to browse</div>
+                        <input type="file" id="evidence" multiple accept="image/*,video/*,.pdf" style="display: none;">
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('evidence').click()">Browse Files</button>
+                        <div class="evidence-preview" id="evidence-preview"></div>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -742,52 +847,82 @@
             </form>
         </div>
         
-        <!-- Appeal Templates Tab -->
-        <div id="appeals-tab" class="tab-content">
-            <h2>Appeal Templates for Rejected Claims</h2>
-            <p>Use these professionally crafted templates to appeal rejected compensation claims with legal references to UAE Consumer Protection Law</p>
+        <!-- Email Templates Tab -->
+        <div id="templates-tab" class="tab-content">
+            <h2>Pre-written Email Templates</h2>
+            <p>Use these professionally crafted templates to dispute compensation claims. Each template includes legal references and clear justification for rejection.</p>
             
-            <div class="appeal-templates">
-                <div class="appeal-card">
-                    <div class="appeal-title">1. General Appeal - No Evidence Provided</div>
-                    <div class="appeal-description">
-                        Use when the customer filed a claim without providing any supporting evidence. References Federal Law No. 15 of 2020 requiring suppliers to justify compensation deductions with clear documentation.
+            <div class="email-templates">
+                <div class="email-card">
+                    <div class="email-header">
+                        <div class="email-platform">Noon</div>
+                        <div class="email-title">Missing Item Dispute</div>
+                        <div class="email-subject">Reversal Requested - Compensation Cancellation</div>
                     </div>
-                    <button class="appeal-button" onclick="selectAppealTemplate('general')">Use Template</button>
+                    <div class="email-body">
+                        <div class="email-content">Dear Noon Support Team,
+
+Regarding Order <order_number> from <branch> dated <date>, an adjustment of AED <amount> was applied for "DT-auto-refund Missing item – Outlet."
+No verifiable evidence has been provided to justify this adjustment, which is required under Noon policy and UAE Consumer Protection Law.
+Request: Please reverse this adjustment and ensure future deductions are applied only with valid evidence.
+Thank you for your prompt attention.
+
+Best regards,  
+<name>  
+<position>  
+<contact>  
+<website></div>
+                        <div class="email-meta">
+                            <div class="email-date">Last used: Oct 5, 2023</div>
+                            <div class="email-status" style="background: #d4edda; color: #155724;">Success Rate: 92%</div>
+                        </div>
+                        <button class="btn-email" onclick="useEmailTemplate('noon-missing')">Use This Template</button>
+                    </div>
                 </div>
                 
-                <div class="appeal-card">
-                    <div class="appeal-title">2. Evidence-Based Appeal</div>
-                    <div class="appeal-description">
-                        When you have strong evidence (photos, videos, delivery reports) that proves the claim is unfounded. Requests reconsideration based on your evidence.
+                <div class="email-card">
+                    <div class="email-header">
+                        <div class="email-platform">Careem</div>
+                        <div class="email-title">Spilled/Damaged Dispute</div>
+                        <div class="email-subject">Driver Responsibility Claim</div>
                     </div>
-                    <button class="appeal-button" onclick="selectAppealTemplate('evidence')">Use Template</button>
+                    <div class="email-body">
+                        <div class="email-content">Dear Careem Support Team,
+Order <order_number> (<branch>) was marked "Spilled/damaged." The damage occurred during delivery and clearly falls under the driver's responsibility, not the restaurant.
+Please confirm:
+Future deductions will only apply when valid evidence shows fault lies with Crispy Chicken.
+Thank you for addressing this promptly.</div>
+                        <div class="email-meta">
+                            <div class="email-date">Last used: Sep 2, 2025</div>
+                            <div class="email-status" style="background: #fff3cd; color: #856404;">Success Rate: 87%</div>
+                        </div>
+                        <button class="btn-email" onclick="useEmailTemplate('careem-spilled')">Use This Template</button>
+                    </div>
                 </div>
                 
-                <div class="appeal-card">
-                    <div class="appeal-title">3. Escalation to Management</div>
-                    <div class="appeal-description">
-                        For cases that require higher-level review. Requests escalation to a supervisor or manager for a fair reassessment of the claim.
+                <div class="email-card">
+                    <div class="email-header">
+                        <div class="email-platform">Careem</div>
+                        <div class="email-title">Wrong Item Dispute</div>
+                        <div class="email-subject">Evidence-Based Rejection</div>
                     </div>
-                    <button class="appeal-button" onclick="selectAppealTemplate('escalation')">Use Template</button>
-                </div>
-                
-                <div class="appeal-card">
-                    <div class="appeal-title">4. Legal Reference Appeal</div>
-                    <div class="appeal-description">
-                        Comprehensive appeal with detailed legal references to UAE Consumer Protection Law. Highlights the legal requirement for evidence-based compensation decisions.
+                    <div class="email-body">
+                        <div class="email-content">Order ID: <order_id>
+Date: <date>, <time>
+Outlet: <branch>
+Customer claimed: <claim_description>
+Refund applied: - AED <amount>
+🚫 We reject this deduction.
+The order was correctly prepared and packed as per the menu description:
+<evidence_details>
+📹 Video evidence confirms that all ordered items were complete, correctly prepared, and handed over intact to the Careem driver.
+✅ Kindly review the attached proof and reverse this unfair deduction immediately.</div>
+                        <div class="email-meta">
+                            <div class="email-date">Last used: Aug 31, 2025</div>
+                            <div class="email-status" style="background: #d4edda; color: #155724;">Success Rate: 95%</div>
+                        </div>
+                        <button class="btn-email" onclick="useEmailTemplate('careem-wrong')">Use This Template</button>
                     </div>
-                    <button class="appeal-button" onclick="selectAppealTemplate('legal')">Use Template</button>
-                </div>
-            </div>
-            
-            <div id="appeal-form-container" class="claim-card" style="display: none;">
-                <h3 id="appeal-form-title">Appeal Form</h3>
-                <div id="appeal-form-content"></div>
-                <div class="appeal-preview" id="appeal-preview"></div>
-                <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button class="btn" onclick="sendAppealEmail()">Send Appeal</button>
-                    <button class="btn btn-secondary" onclick="cancelAppeal()">Cancel</button>
                 </div>
             </div>
         </div>
@@ -831,19 +966,6 @@
                 </ul>
                 <p><strong>Timeframe:</strong> Disputes must be submitted within 7-14 days of receiving the claim notice, depending on the platform's policy.</p>
             </div>
-            
-            <div class="legal-reference">
-                <h3>Best Practices for Documentation</h3>
-                <p>To strengthen your dispute cases, maintain proper documentation of:</p>
-                <ul>
-                    <li>Order preparation and quality control processes</li>
-                    <li>Delivery confirmation procedures and records</li>
-                    <li>Customer communication regarding order issues</li>
-                    <li>Incident reports for any delivery problems</li>
-                    <li>Regular staff training on customer service and dispute handling</li>
-                </ul>
-                <p><strong>Tip:</strong> Implement a digital system for storing and retrieving delivery evidence quickly when disputes arise.</p>
-            </div>
         </div>
     </div>
 
@@ -873,6 +995,152 @@
             });
         });
         
+        // Load example function
+        function loadExample(exampleId) {
+            if (!exampleId) return;
+            
+            // Clear existing values first
+            clearForm();
+            
+            // Example data
+            const examples = {
+                'noon-missing': {
+                    platform: 'Noon',
+                    orderNumber: '0546',
+                    branch: 'Crispy Chicken Al Markaziya',
+                    claimReason: 'Missing item',
+                    claimAmount: '10.00',
+                    disputeReason: 'No verifiable evidence has been provided to justify this adjustment, which is required under Noon policy and UAE Consumer Protection Law.',
+                    requestDetails: 'Please reverse this adjustment and ensure future deductions are applied only with valid evidence.'
+                },
+                'careem-spilled': {
+                    platform: 'Careem',
+                    orderNumber: '128362515',
+                    branch: 'Crispy Chicken – barsha',
+                    claimReason: 'Spilled/damaged',
+                    claimAmount: '',
+                    disputeReason: 'The damage occurred during delivery and clearly falls under the driver\'s responsibility, not the restaurant.',
+                    requestDetails: 'Please confirm that future deductions will only apply when valid evidence shows fault lies with Crispy Chicken.'
+                },
+                'careem-wrong': {
+                    platform: 'Careem',
+                    orderNumber: '127616727',
+                    branch: 'Crispy Chicken – Al Barsha 1, Dubai',
+                    claimReason: 'Wrong item sent / missing cheese, oily chicken, no tissues or ketchup',
+                    claimAmount: '20.00',
+                    disputeReason: 'The order was correctly prepared and packed as per the menu description. The Volcano Sandwich Single includes cheese as per the recipe, and it was added during preparation. The Daily Original Meal was freshly cooked and packed according to Crispy Chicken\'s standard quality process. Condiments (tissues and ketchup) are complimentary items, not part of the basket total, and cannot justify a refund claim. Video evidence confirms that all ordered items were complete, correctly prepared, and handed over intact to the Careem driver.',
+                    requestDetails: 'Kindly review the attached proof and reverse this unfair deduction immediately.'
+                }
+            };
+            
+            const example = examples[exampleId];
+            if (example) {
+                document.getElementById('platform').value = example.platform;
+                document.getElementById('order-number').value = example.orderNumber;
+                document.getElementById('branch').value = example.branch;
+                document.getElementById('claim-reason').value = example.claimReason;
+                document.getElementById('claim-amount').value = example.claimAmount;
+                document.getElementById('dispute-reason').value = example.disputeReason;
+                document.getElementById('request-details').value = example.requestDetails;
+                
+                // Auto-generate claim ID
+                document.getElementById('claim-id').value = `CLM-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
+                
+                // Set current date
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('order-date').value = today;
+            }
+        }
+        
+        // Clear example function
+        function clearExample() {
+            document.getElementById('load-example').value = '';
+            clearForm();
+        }
+        
+        // Clear form function
+        function clearForm() {
+            document.getElementById('dispute-form').reset();
+            document.getElementById('evidence-preview').innerHTML = '';
+        }
+        
+        // Use email template function
+        function useEmailTemplate(templateId) {
+            // Load the example into the dispute form
+            loadExample(templateId);
+            
+            // Switch to dispute tab
+            switchTab('dispute');
+            
+            // Scroll to form
+            document.getElementById('dispute-form').scrollIntoView({ behavior: 'smooth' });
+            
+            // Show notification
+            showNotification('dispute-notification', 'Email template loaded into dispute form. Customize and submit.', 'success');
+        }
+        
+        // Evidence upload functionality
+        const evidenceUpload = document.getElementById('evidence-upload');
+        const evidenceInput = document.getElementById('evidence');
+        const evidencePreview = document.getElementById('evidence-preview');
+        
+        evidenceUpload.addEventListener('click', () => evidenceInput.click());
+        
+        evidenceUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            evidenceUpload.classList.add('dragover');
+        });
+        
+        evidenceUpload.addEventListener('dragleave', () => {
+            evidenceUpload.classList.remove('dragover');
+        });
+        
+        evidenceUpload.addEventListener('drop', (e) => {
+            e.preventDefault();
+            evidenceUpload.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        });
+        
+        evidenceInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+        
+        function handleFiles(files) {
+            evidencePreview.innerHTML = '';
+            
+            Array.from(files).forEach(file => {
+                const item = document.createElement('div');
+                item.className = 'evidence-item';
+                
+                const icon = document.createElement('div');
+                icon.className = 'evidence-item-icon';
+                
+                if (file.type.startsWith('image/')) {
+                    icon.textContent = '📷';
+                } else if (file.type.startsWith('video/')) {
+                    icon.textContent = '📹';
+                } else {
+                    icon.textContent = '📄';
+                }
+                
+                const name = document.createElement('div');
+                name.className = 'evidence-item-name';
+                name.textContent = file.name;
+                
+                const remove = document.createElement('div');
+                remove.className = 'evidence-item-remove';
+                remove.textContent = '×';
+                remove.onclick = () => item.remove();
+                
+                item.appendChild(icon);
+                item.appendChild(name);
+                item.appendChild(remove);
+                evidencePreview.appendChild(item);
+            });
+        }
+        
         // Submit dispute form
         document.getElementById('dispute-form').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -884,11 +1152,12 @@
             const claimReason = document.getElementById('claim-reason').value;
             const claimAmount = document.getElementById('claim-amount').value;
             const disputeReason = document.getElementById('dispute-reason').value;
+            const requestDetails = document.getElementById('request-details').value;
             const evidence = document.getElementById('evidence').files;
             const legalRef = document.getElementById('legal-reference').value;
             const tone = document.querySelector('.tone-option.active').dataset.tone;
             
-            if (!claimId || !platform || !orderNumber || !branch || !claimReason || !claimAmount || !disputeReason || evidence.length === 0) {
+            if (!claimId || !platform || !orderNumber || !branch || !claimReason || !claimAmount || !disputeReason || !requestDetails || evidence.length === 0) {
                 showNotification('dispute-notification', 'Please fill in all required fields', 'error');
                 return;
             }
@@ -899,10 +1168,10 @@
                 'success');
             
             // Reset form
-            this.reset();
+            clearForm();
         });
         
-        // Generate dispute letter
+        // Generate dispute letter function
         function generateDisputeLetter() {
             const claimId = document.getElementById('claim-id').value;
             const platform = document.getElementById('platform').value;
@@ -911,16 +1180,17 @@
             const claimReason = document.getElementById('claim-reason').value;
             const claimAmount = document.getElementById('claim-amount').value;
             const disputeReason = document.getElementById('dispute-reason').value;
+            const requestDetails = document.getElementById('request-details').value;
             const legalRef = document.getElementById('legal-reference').value;
             const tone = document.querySelector('.tone-option.active').dataset.tone;
             
-            if (!claimId || !platform || !orderNumber || !branch || !claimReason || !claimAmount || !disputeReason) {
+            if (!claimId || !platform || !orderNumber || !branch || !claimReason || !claimAmount || !disputeReason || !requestDetails) {
                 showNotification('dispute-notification', 'Please complete dispute details first', 'error');
                 return;
             }
             
             // Generate letter content
-            const letterContent = generateDisputeLetterContent(claimId, platform, orderNumber, branch, claimReason, claimAmount, disputeReason, legalRef, tone);
+            const letterContent = generateDisputeLetterContent(claimId, platform, orderNumber, branch, claimReason, claimAmount, disputeReason, requestDetails, legalRef, tone);
             
             // Show letter in new window
             const letterWindow = window.open('', '_blank', 'width=800,height=1000');
@@ -968,6 +1238,9 @@
                         <p><strong>Dispute Reason:</strong></p>
                         <p>${disputeReason}</p>
                         
+                        <p><strong>Requested Action:</strong></p>
+                        <p>${requestDetails}</p>
+                        
                         ${legalRef ? `
                         <div class="legal-section">
                             <h3>Legal Reference</h3>
@@ -996,7 +1269,7 @@
         }
         
         // Generate dispute letter content
-        function generateDisputeLetterContent(claimId, platform, orderNumber, branch, claimReason, claimAmount, disputeReason, legalRef, tone) {
+        function generateDisputeLetterContent(claimId, platform, orderNumber, branch, claimReason, claimAmount, disputeReason, requestDetails, legalRef, tone) {
             const templates = {
                 Professional: `
                     Dear ${platform.charAt(0).toUpperCase() + platform.slice(1)} Support Team,
@@ -1067,179 +1340,6 @@
             };
             
             return templates[tone];
-        }
-        
-        // Appeal templates
-        const appealTemplates = {
-            general: {
-                title: "General Appeal - No Evidence Provided",
-                subject: "Reversal Requested - Compensation Cancellation (Order [Order Number])",
-                body: `Dear ${platform.charAt(0).toUpperCase() + platform.slice(1)} Support Team,
-
-My compensation request for Order [Order Number], cancelled due to "[reason]", lacks any supporting evidence (such as dated photos or documentation). Under Federal Law No. 15 of 2020 on Consumer Protection, suppliers must justify any compensation deductions with clear documentation.
-
-Please reverse this decision unless valid evidence is provided.
-
-Thank you,
-[Restaurant Name]`
-            },
-            evidence: {
-                title: "Evidence-Based Appeal",
-                subject: "Evidence for Compensation Appeal - Order [Order Number]",
-                body: `Hello ${platform.charAt(0).toUpperCase() + platform.slice(1)} Support,
-
-My compensation for Order [Order Number] was cancelled without evidence. I can provide photos or other documents to support my claim. Please advise how I can submit these to enable reconsideration.
-
-Thank you,
-[Restaurant Name]`
-            },
-            escalation: {
-                title: "Escalation Request",
-                subject: "Escalation - Compensation Rejection - Order [Order Number]",
-                body: `Dear ${platform.charAt(0).toUpperCase() + platform.slice(1)} Support,
-
-My compensation claim for Order [Order Number] was rejected without justification. Please escalate this case to a supervisor or manager for a fair review.
-
-Thank you for your urgency.
-
-Best regards,
-[Restaurant Name]`
-            },
-            legal: {
-                title: "Legal Reference Appeal",
-                subject: "Compensation Reversal Request - Order [Order Number]",
-                body: `Hello ${platform.charAt(0).toUpperCase() + platform.slice(1)} Support,
-
-My claim for Order [Order Number] was refused citing "[reason]", but no evidence was provided. Under the updated Consumer Protection Law (incorporating Federal Law No. 15/2020 and its Executive Regulations), any deduction must be verifiably justified.
-
-Please reverse the decision or share documentation immediately.
-
-Regards,
-[Restaurant Name]`
-            }
-        };
-        
-        // Select appeal template
-        function selectAppealTemplate(type) {
-            const template = appealTemplates[type];
-            const formContainer = document.getElementById('appeal-form-container');
-            const formTitle = document.getElementById('appeal-form-title');
-            const formContent = document.getElementById('appeal-form-content');
-            const preview = document.getElementById('appeal-preview');
-            
-            // Set form title
-            formTitle.textContent = template.title;
-            
-            // Create form content
-            formContent.innerHTML = `
-                <div class="form-group">
-                    <label>Claim ID</label>
-                    <input type="text" id="appeal-claim-id" placeholder="e.g. CLM-2023-7845" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Order Number</label>
-                    <input type="text" id="appeal-order-number" placeholder="e.g. FF97NN6YOH1H65A" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Restaurant Branch</label>
-                    <input type="text" id="appeal-branch" placeholder="e.g. Crispy Chicken - Al Mushrif" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Claim Reason</label>
-                    <input type="text" id="appeal-reason" placeholder="e.g. Missing item" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Recipient Email</label>
-                    <input type="email" id="appeal-recipient" placeholder="support@noon.com" required>
-                </div>
-            `;
-            
-            // Show form and update preview
-            formContainer.style.display = 'block';
-            updateAppealPreview(type);
-            
-            // Add event listeners to update preview on input change
-            ['appeal-claim-id', 'appeal-order-number', 'appeal-branch', 'appeal-reason'].forEach(id => {
-                document.getElementById(id).addEventListener('input', () => updateAppealPreview(type));
-            });
-        }
-        
-        // Update appeal preview
-        function updateAppealPreview(type) {
-            const template = appealTemplates[type];
-            const claimId = document.getElementById('appeal-claim-id').value || '[Claim ID]';
-            const orderNumber = document.getElementById('appeal-order-number').value || '[Order Number]';
-            const branch = document.getElementById('appeal-branch').value || '[Restaurant Branch]';
-            const reason = document.getElementById('appeal-reason').value || '[reason]';
-            
-            const subject = template.subject
-                .replace(/\[Order Number\]/g, orderNumber)
-                .replace(/\[Claim ID\]/g, claimId);
-            
-            const body = template.body
-                .replace(/\[Order Number\]/g, orderNumber)
-                .replace(/\[reason\]/g, reason)
-                .replace(/\[Restaurant Branch\]/g, branch)
-                .replace(/\[Claim ID\]/g, claimId)
-                .replace(/\[platform\]/g, document.getElementById('appeal-recipient').value.includes('noon') ? 'Noon' : 
-                        document.getElementById('appeal-recipient').value.includes('careem') ? 'Careem' : 'Platform');
-            
-            document.getElementById('appeal-preview').textContent = `Subject: ${subject}\n\n${body}`;
-        }
-        
-        // Send appeal email
-        function sendAppealEmail() {
-            const recipient = document.getElementById('appeal-recipient').value;
-            
-            if (!recipient) {
-                alert('Please enter recipient email address');
-                return;
-            }
-            
-            // Show loading state
-            const sendBtn = event.target;
-            sendBtn.disabled = true;
-            sendBtn.innerHTML = '<span class="spinner"></span>Sending...';
-            
-            // Simulate sending email
-            setTimeout(() => {
-                // Reset button
-                sendBtn.disabled = false;
-                sendBtn.innerHTML = 'Send Appeal';
-                
-                // Show success notification
-                showNotification('appeals-notification', 
-                    `Appeal email sent successfully to ${recipient}`, 
-                    'success');
-                
-                // Reset form
-                cancelAppeal();
-            }, 2000);
-        }
-        
-        // Cancel appeal
-        function cancelAppeal() {
-            document.getElementById('appeal-form-container').style.display = 'none';
-            // Reset form fields
-            ['appeal-claim-id', 'appeal-order-number', 'appeal-branch', 'appeal-reason', 'appeal-recipient'].forEach(id => {
-                document.getElementById(id).value = '';
-            });
-        }
-        
-        // Submit dispute function
-        function submitDispute(claimId) {
-            // Switch to dispute tab
-            document.querySelector('.tab:nth-child(3)').click();
-            
-            // Pre-fill claim ID
-            document.getElementById('claim-id').value = claimId;
-            
-            // Scroll to form
-            document.getElementById('dispute-form').scrollIntoView({ behavior: 'smooth' });
         }
         
         // Show notification helper
