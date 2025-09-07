@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dispute Email Generator — Crispy Chicken</title>
+<style>
+  body{font-family:Inter,system-ui,Arial,sans-serif;margin:0;background:#f7fafc;color:#0f172a}
+  .container{max-width:980px;margin:20px auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.08)}
+  h1{font-size:20px;margin:0 0 12px}
+  label{display:block;margin-top:10px;font-weight:600}
+  input,select,textarea{width:100%;padding:10px;border:1px solid #e6edf3;border-radius:6px;margin-top:6px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  button{background:#f97316;color:#fff;padding:10px 14px;border:0;border-radius:8px;margin-top:12px;cursor:pointer}
+  .small{font-size:13px;color:#475569}
+  .preview{white-space:pre-wrap;background:#0f172a;color:#f8fafc;padding:12px;border-radius:6px;margin-top:12px}
+  .flex{display:flex;gap:10px;align-items:center}
+  .muted{color:#64748b;font-size:13px}
+  .row{display:flex;gap:8px}
+  .filelabel{background:#eef2ff;padding:8px;border-radius:6px;border:1px dashed #c7d2fe;color:#3730a3}
+  .actions{display:flex;gap:10px;flex-wrap:wrap}
+  .note{font-size:13px;color:#334155;margin-top:6px}
+  .danger{color:#b91c1c;font-weight:700}
+  .ok{color:#065f46;font-weight:700}
+  .smallbtn{background:#e2e8f0;color:#0f172a;padding:8px 10px;border-radius:6px;border:0}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Dispute Email Generator — Crispy Chicken</h1>
+  <p class="small">Fill fields, attach delivery video (or link). Use the controls to validate, generate EML, send WhatsApp (opens new chat) or copy the email. Fields marked * are required for selected reasons.</p>
+
+  <div class="two">
+    <div>
+      <label>Order Number *</label>
+      <input id="orderId" placeholder="e.g. FF8VNNFDJ0NKJ3A" />
+    </div>
+    <div>
+      <label>Order Date & Time *</label>
+      <input id="orderDate" type="datetime-local" />
+    </div>
+  </div>
+
+  <div class="two">
+    <div>
+      <label>Branch Name *</label>
+      <input id="branchName" placeholder="Crispy Chicken - Al Barsha" />
+    </div>
+    <div>
+      <label>Platform *</label>
+      <select id="platform"><option>Careem</option><option>Noon</option><option>Other</option></select>
+    </div>
+  </div>
+
+  <div class="three">
+    <div>
+      <label>Basket Amount (AED)</label>
+      <input id="basketAmount" placeholder="35.00" type="number" step="0.01" />
+    </div>
+    <div>
+      <label>Deducted Amount (AED)</label>
+      <input id="deductedAmount" placeholder="18.00" type="number" step="0.01" />
+    </div>
+    <div>
+      <label>Tone</label>
+      <select id="tone"><option>Polite</option><option>Firm</option><option>Legal (Escalation)</option></select>
+    </div>
+  </div>
+
+  <label>Dispute Reason *</label>
+  <select id="reason">
+    <option value="Missing item">Missing item</option>
+    <option value="Spilled / damaged">Spilled / damaged</option>
+    <option value="Delayed order">Delayed order</option>
+    <option value="Wrong item delivered">Wrong item delivered</option>
+    <option value="Hygiene issues">Hygiene issues</option>
+    <option value="Other">Other</option>
+  </select>
+
+  <label>Customer Notes (optional)</label>
+  <textarea id="notes" rows="3" placeholder="Customer said: ..."></textarea>
+
+  <label>Delivery video or evidence link</label>
+  <input id="evidenceLink" placeholder="https://drive.google.com/... or upload below" />
+
+  <label>Or upload video/image file</label>
+  <div class="row"><label class="filelabel">Choose File <input id="evidenceFile" type="file" accept="video/*,image/*" style="display:none"/></label><span id="fileInfo" class="muted">(file will be uploaded to server when you click Upload)</span></div>
+
+  <div class="actions">
+    <button id="validateBtn" class="smallbtn">Validate Required Evidence</button>
+    <button id="uploadBtn" class="smallbtn">Upload Evidence</button>
+    <button id="generate" >Generate Email</button>
+    <button id="genEml" >Generate .eml</button>
+    <button id="whatsappBtn">Send WhatsApp</button>
+    <button id="copyBtn" disabled>Copy Email</button>
+    <button id="downloadBtn" disabled>Download .txt</button>
+  </div>
+
+  <div id="status" class="note"></div>
+  <div id="preview" class="preview" aria-live="polite"></div>
+</div>
+
+<script>
+// Client-side enhancements: required evidence rules, upload stub, .eml generator, WhatsApp message
+const reasonsRequireEvidence = new Set(['Missing item','Spilled / damaged','Hygiene issues']);
+
+function fmtDateISO(dt){ if(!dt) return ''; const d = new Date(dt); return d.toLocaleString('en-GB', {year:'numeric',month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit'}); }
+
+async function uploadFile(){
+  const fileInput = document.getElementById('evidenceFile');
+  const f = fileInput.files[0];
+  if(!f) return {ok:false,msg:'No file selected'};
+  // stub: POST to /api/upload — backend must implement
+  const form = new FormData(); form.append('file', f);
+  document.getElementById('status').textContent = 'Uploading evidence...';
+  try{
+    const resp = await fetch('/api/upload', {method:'POST',body:form});
+    if(!resp.ok) throw new Error('Upload failed');
+    const data = await resp.json();
+    document.getElementById('status').textContent = 'Upload complete.';
+    return {ok:true,url:data.url};
+  }catch(err){
+    document.getElementById('status').textContent = 'Upload failed (no backend). Using local filename only.';
+    return {ok:false,msg:err.message,name:f.name};
+  }
+}
+
+function buildEmail(){
+  const orderId = document.getElementById('orderId').value.trim();
+  const orderDate = document.getElementById('orderDate').value;
+  const branchName = document.getElementById('branchName').value.trim();
+  const platform = document.getElementById('platform').value;
+  const basket = document.getElementById('basketAmount').value;
+  const deducted = document.getElementById('deductedAmount').value;
+  const reason = document.getElementById('reason').value;
+  const notes = document.getElementById('notes').value.trim();
+  const evidenceLink = document.getElementById('evidenceLink').value.trim();
+  const evidenceFile = document.getElementById('evidenceFile').files[0];
+  const tone = document.getElementById('tone').value;
+
+  const fileLine = evidenceFile ? `Attached file: ${evidenceFile.name}` : (evidenceLink ? `Evidence link: ${evidenceLink}` : 'No evidence attached');
+
+  const subject = `Dispute: Order ${orderId} — ${reason}`;
+
+  // Tone handling
+  let opening='Dear ResOps Team,';
+  let closing='Best regards,';
+  if(tone==='Polite'){ opening='Dear ResOps Team,'; }
+  if(tone==='Firm'){ opening='Dear ResOps Team,'; }
+  if(tone==='Legal (Escalation)'){ opening='To Whom It May Concern,'; }
+
+  const body = `${opening}
+
+I am writing regarding an adjustment applied to Order ${orderId}, placed on ${fmtDateISO(orderDate)} at ${branchName} via ${platform}. The basket amount was AED ${basket} and a deduction of AED ${deducted} was processed citing: "${reason}".
+
+After internal verification, we confirm that the order was delivered complete and without missing items. ${notes ? '
+Customer notes: ' + notes + '
+
+' : ''}As evidence, please find below:
+${fileLine}
+
+We request the following actions:
+1) Confirm receipt of the attached evidence and review it.
+2) If no valid evidence exists to justify the deduction, please reverse the AED ${deducted} deduction and restore the full amount.
+3) Provide a timeline and confirmation once resolved.
+
+This matter is time-sensitive and we appreciate your immediate attention.
+
+${closing}
+
+Ahmed Kenawy
+Call Center Manager | Crispy Chicken
+Phone: Phone: Phone: Phone: +971 50 902 1993
+Email: kenawe@crispychicken.rest`;
+
+  return {subject,body,fileLine};
+}
+
+function previewEmail(){
+  const email = buildEmail();
+  document.getElementById('preview').textContent = `Subject: ${email.subject}
+
+${email.body}`;
+  document.getElementById('copyBtn').disabled = false; document.getElementById('downloadBtn').disabled = false;
+}
+
+document.getElementById('generate').addEventListener('click', ()=>{
+  // validate required fields
+  const required = ['orderId','orderDate','branchName'];
+  for(const id of required){ if(!document.getElementById(id).value.trim()){ alert('Please fill required fields: Order ID, Order Date, Branch Name.'); return; } }
+  // if reason requires evidence, ensure evidence present
+  const reason = document.getElementById('reason').value;
+  const link = document.getElementById('evidenceLink').value.trim();
+  const file = document.getElementById('evidenceFile').files[0];
+  if(reasonsRequireEvidence.has(reason) && !link && !file){ alert('This reason requires evidence (video or image). Please attach or provide a link.'); return; }
+  previewEmail();
+});
+
+document.getElementById('validateBtn').addEventListener('click', ()=>{
+  const reason = document.getElementById('reason').value;
+  const link = document.getElementById('evidenceLink').value.trim();
+  const file = document.getElementById('evidenceFile').files[0];
+  if(reasonsRequireEvidence.has(reason)){
+    if(link || file){ document.getElementById('status').innerHTML = '<span class="ok">Evidence present — ready to generate.</span>'; } else { document.getElementById('status').innerHTML = '<span class="danger">Evidence required for this reason.</span>'; }
+  } else { document.getElementById('status').innerHTML = '<span class="ok">No mandatory evidence required for this reason.</span>'; }
+});
+
+// Upload button — sends to /api/upload (backend must implement)
+document.getElementById('uploadBtn').addEventListener('click', async ()=>{
+  const res = await uploadFile();
+  if(res.ok){ document.getElementById('evidenceLink').value = res.url; document.getElementById('status').innerHTML = '<span class="ok">Upload succeeded. Link inserted.</span>'; }
+  else if(res.name){ document.getElementById('fileInfo').textContent = `Local file: ${res.name}`; }
+  else { document.getElementById('status').textContent = 'Upload failed.'; }
+});
+
+// generate .eml (basic)
+document.getElementById('genEml').addEventListener('click', ()=>{
+  const email = buildEmail();
+  const headers = [];
+  headers.push(`From: "Crispy Chicken" <kenawe@crispychicken.rest>`);
+  headers.push(`To: resops@careem.com`);
+  headers.push(`Subject: ${email.subject}`);
+  headers.push('MIME-Version: 1.0');
+  headers.push('Content-Type: text/plain; charset="UTF-8"');
+  const eml = headers.join('
+') + '
+
+' + email.body;
+  const blob = new Blob([eml], {type:'message/rfc822'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = `dispute-${document.getElementById('orderId').value || 'order'}.eml`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+});
+
+// WhatsApp button — opens wa.me with message; can be swapped to call backend for WhatsApp Cloud API
+const branchWhats = {
+  "Crispy Chicken Khalidiya": "971569494764",
+  "Crispy Chicken Muroor": "971505414641",
+  "Crispy Chicken Shabiya 11": "971562690688",
+  "Crispy Chicken Al Barsha": "971569659524",
+  "Crispy Chicken Al Satwa": "971567970685",
+  "Crispy Chicken Electra": "971563866859",
+  "Crispy Chicken Hamdan": "971556886650",
+  "Crispy Chicken-Al Khalidiya": "971569494764"
+};
+
+document.getElementById('whatsappBtn').addEventListener('click', ()=>{
+  const orderId = document.getElementById('orderId').value.trim();
+  const branch = document.getElementById('branchName').value.trim();
+  const platform = document.getElementById('platform').value;
+  const orderDate = document.getElementById('orderDate').value;
+  const reason = document.getElementById('reason').value;
+  const deducted = document.getElementById('deductedAmount').value;
+  const link = document.getElementById('evidenceLink').value.trim();
+  const phone = branchWhats[branch] || '';
+  const msg = `⚠️ New Dispute Case ⚠️
+
+Order: ${orderId}
+Branch: ${branch}
+Platform: ${platform}
+Date: ${fmtDateISO(orderDate)}
+Issue: ${reason}
+Deduction: AED ${deducted}
+Evidence: ${link || 'See attached'}
+
+Please review.`;
+  if(phone){ window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`,'_blank'); }
+  else { alert('No WhatsApp number configured for this branch.'); }
+});
+
+// copy and download
+const previewEl = document.getElementById('preview');
+const copyBtn = document.getElementById('copyBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+
+copyBtn.addEventListener('click', async ()=>{ const text = previewEl.textContent; try{ await navigator.clipboard.writeText(text); alert('Email copied to clipboard'); }catch(e){ alert('Copy failed — select and copy manually'); } });
+
+downloadBtn.addEventListener('click', ()=>{ const text = previewEl.textContent || ''; const blob = new Blob([text], {type:'text/plain'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `dispute-${document.getElementById('orderId').value || 'order'}.txt`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); });
+
+// UX: show selected file name
+document.querySelector('.filelabel input').addEventListener('change', function(){ const f = this.files[0]; if(f){ this.parentElement.innerText = `Selected: ${f.name}`; } });
+
+// generate preview on change
+['orderId','orderDate','branchName','platform','basketAmount','deductedAmount','reason','notes','evidenceLink'].forEach(id=>document.getElementById(id).addEventListener('change', ()=>{ try{ const email = buildEmail(); previewEmail(); }catch(e){} }));
+
+</script>
+</body>
+</html>
