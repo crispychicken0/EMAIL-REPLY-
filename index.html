@@ -1,166 +1,566 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Dispute Email Generator — Crispy Chicken</title>
-  <style>
-    body { font-family: sans-serif; margin: 20px; }
-    input, select, textarea, button { display: block; margin: 10px 0; padding: 8px; width: 100%; max-width: 400px; }
-    .btn-group button { width: auto; display: inline-block; margin-right: 10px; }
-    .preview { border: 1px solid #ccc; padding: 10px; white-space: pre-wrap; margin-top: 20px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dispute Management System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .tab:hover {
+            background: #e9ecef;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .btn-success {
+            background: #28a745;
+        }
+        
+        .dispute-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+        
+        .dispute-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dispute-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .dispute-id {
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .dispute-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-resolved {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .dispute-details {
+            margin-bottom: 15px;
+        }
+        
+        .dispute-details p {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        .evidence-section {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .evidence-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f1f3f5;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .evidence-icon {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+        }
+        
+        .notification {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .notification-icon {
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .notification-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 5px solid #28a745;
+        }
+        
+        .notification-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 5px solid #dc3545;
+        }
+        
+        .notification-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 5px solid #17a2b8;
+        }
+        
+        .tone-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .tone-option {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tone-option.active {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+        
+        .tone-option:hover {
+            background: #f8f9fa;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                border-bottom: 1px solid #dee2e6;
+            }
+            
+            .dispute-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .dispute-status {
+                margin-top: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <div class="header">
+            <h1>Dispute Management System</h1>
+            <p>Manage compensation disputes for Noon & Careem orders</p>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('submit')">Submit Dispute</div>
+            <div class="tab" onclick="switchTab('review')">Review Disputes</div>
+        </div>
+        
+        <div id="submit-tab" class="tab-content active">
+            <h2>Submit a New Dispute</h2>
+            <div id="submit-notification"></div>
+            
+            <form id="dispute-form">
+                <div class="form-group">
+                    <label for="order-number">Order Number</label>
+                    <input type="text" id="order-number" placeholder="e.g. FF97NN6YOH1H65A" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="order-ref">Order Reference</label>
+                    <input type="text" id="order-ref" placeholder="e.g. 3691" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="branch">Branch Location</label>
+                    <input type="text" id="branch" placeholder="e.g. Crispy Chicken - Al Mushrif, Abu Dhabi" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="order-date">Order Date</label>
+                    <input type="datetime-local" id="order-date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="subtotal">Order Subtotal (AED)</label>
+                    <input type="number" id="subtotal" placeholder="37.00" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="adjustment">Adjustment Amount (AED)</label>
+                    <input type="number" id="adjustment" placeholder="-14.00" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reason">Dispute Reason</label>
+                    <select id="reason" required>
+                        <option value="">Select a reason</option>
+                        <option value="Missing item">Missing item</option>
+                        <option value="Spilled/damaged">Spilled/damaged</option>
+                        <option value="Hygiene">Hygiene</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="evidence">Evidence (required for sensitive reasons)</label>
+                    <input type="file" id="evidence" multiple accept="image/*,video/*,.pdf">
+                    <small id="evidence-hint" style="color: #dc3545; display: none;">Evidence is required for this reason</small>
+                </div>
+                
+                <button type="submit" class="btn">Submit Dispute</button>
+            </form>
+        </div>
+        
+        <div id="review-tab" class="tab-content">
+            <h2>Review Disputes</h2>
+            <div id="review-notification"></div>
+            
+            <div id="dispute-list">
+                <div class="dispute-card">
+                    <div class="dispute-header">
+                        <div class="dispute-id">Dispute #12345</div>
+                        <div class="dispute-status status-pending">Pending</div>
+                    </div>
+                    
+                    <div class="dispute-details">
+                        <p><strong>Order:</strong> FF97NN6YOH1H65A</p>
+                        <p><strong>Branch:</strong> Crispy Chicken - Al Mushrif, Abu Dhabi</p>
+                        <p><strong>Reason:</strong> Missing item</p>
+                        <p><strong>Adjustment:</strong> -14.00 AED</p>
+                        <p><strong>Submitted:</strong> 2023-10-05 14:30:00</p>
+                    </div>
+                    
+                    <div class="evidence-section">
+                        <h4>Evidence Provided</h4>
+                        <div class="evidence-item">
+                            <div class="evidence-icon">📷</div>
+                            <div>delivery_photo.jpg</div>
+                        </div>
+                        <div class="evidence-item">
+                            <div class="evidence-icon">📹</div>
+                            <div>delivery_video.mp4</div>
+                        </div>
+                    </div>
+                    
+                    <div class="review-form">
+                        <div class="form-group">
+                            <label>Decision</label>
+                            <select id="decision-12345">
+                                <option value="">Select decision</option>
+                                <option value="approved">Approve</option>
+                                <option value="rejected">Reject</option>
+                                <option value="partial">Partial Approval</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Resolution Amount (AED)</label>
+                            <input type="number" id="amount-12345" step="0.01">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Resolution Notes</label>
+                            <textarea id="notes-12345" rows="3" placeholder="Explain your decision..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Response Tone</label>
+                            <div class="tone-selector">
+                                <div class="tone-option active" data-tone="Polite">Polite</div>
+                                <div class="tone-option" data-tone="Firm">Firm</div>
+                                <div class="tone-option" data-tone="Legal">Legal</div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-success" onclick="submitReview(12345)">Submit Review</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<h1>Dispute Email Generator</h1>
-
-<label>Order Number *</label>
-<input id="orderId" placeholder="FF8VNNFDJ0NKJ3A">
-
-<label>Order Date & Time *</label>
-<input id="orderDate" type="datetime-local">
-
-<label>Branch Name *</label>
-<input id="branchName" placeholder="Crispy Chicken - Al Barsha">
-
-<label>Platform *</label>
-<select id="platform"><option>Careem</option><option>Noon</option></select>
-
-<label>Basket Amount (AED)</label>
-<input id="basketAmount" type="number" step="0.01" placeholder="35.00">
-
-<label>Deducted Amount (AED)</label>
-<input id="deductedAmount" type="number" step="0.01" placeholder="18.00">
-
-<label>Dispute Reason *</label>
-<select id="reason">
-  <option value="Missing item">Missing item</option>
-  <option value="Spilled / damaged">Spilled / damaged</option>
-  <option value="Hygiene issues">Hygiene issues</option>
-  <option value="Other">Other</option>
-</select>
-
-<label>Evidence Link</label>
-<input id="evidenceLink" placeholder="https://...">
-
-<label>Or Upload File</label>
-<input id="evidenceFile" type="file" accept="video/*,image/*">
-
-<div class="btn-group">
-  <button id="validateBtn">Validate Evidence</button>
-  <button id="uploadBtn">Upload (stub)</button>
-  <button id="generate">Generate Email</button>
-  <button id="genEml">Generate .eml</button>
-  <button id="whatsappBtn">Send WhatsApp</button>
-  <button id="copyBtn" disabled>Copy Email</button>
-  <button id="downloadBtn" disabled>Download .txt</button>
-</div>
-
-<div id="status"></div>
-<pre id="preview" class="preview"></pre>
-
-<script>
-function init() {
-  const reasonReq = new Set(['Missing item','Spilled / damaged','Hygiene issues']);
-  
-  const byId = id => document.getElementById(id);
-
-  const buildEmail = () => {
-    const orderId = byId('orderId').value.trim();
-    const orderDate = byId('orderDate').value;
-    const branch = byId('branchName').value.trim();
-    const platform = byId('platform').value;
-    const basket = byId('basketAmount').value;
-    const deducted = byId('deductedAmount').value;
-    const reason = byId('reason').value;
-    const link = byId('evidenceLink').value.trim();
-    const file = byId('evidenceFile').files[0];
-    const fileLine = file ? `Attached file: ${file.name}` : (link ? `Evidence link: ${link}` : 'No evidence attached');
-    const subject = `Dispute: Order ${orderId} — ${reason}`;
-    const body = `Dear ResOps Team,
-
-I am writing regarding an adjustment on Order ${orderId} placed on ${new Date(orderDate).toLocaleString()} at ${branch} via ${platform}. Basket: AED ${basket}, deduction: AED ${deducted}, reason: ${reason}.
-
-After verification, order was delivered complete. Evidence provided:
-${fileLine}
-
-Actions required:
-1) Confirm receipt of evidence.
-2) If no valid evidence, reverse deduction and refund AED ${deducted}.
-3) Provide timeline for resolution.
-
-Best regards,
-Ahmed Kenawy
-Call Center Manager | Crispy Chicken
-    `;
-    return {subject, body};
-  };
-
-  byId('validateBtn').onclick = () => {
-    const reason = byId('reason').value;
-    const link = byId('evidenceLink').value.trim();
-    const file = byId('evidenceFile').files[0];
-    byId('status').textContent = reasonReq.has(reason) && !link && !file
-      ? '⛔ Evidence required.'
-      : '✅ Ready.';
-  };
-
-  byId('generate').onclick = () => {
-    const {subject, body} = buildEmail();
-    byId('preview').textContent = `Subject: ${subject}\n\n${body}`;
-    byId('copyBtn').disabled = false;
-    byId('downloadBtn').disabled = false;
-  };
-
-  byId('genEml').onclick = () => {
-    const {subject, body} = buildEmail();
-    const headers = [
-      'From: Crispy Chicken <kenawe@crispychicken.rest>',
-      'To: resops@careem.com',
-      `Subject: ${subject}`,
-      'MIME-Version: 1.0',
-      'Content-Type: text/plain; charset="UTF-8"'
-    ];
-    const eml = headers.join('\r\n') + '\r\n\r\n' + body;
-    const blob = new Blob([eml], {type: 'message/rfc822'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url;
-    a.download = `dispute-${byId('orderId').value || 'order'}.eml`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  byId('whatsappBtn').onclick = () => {
-    const {body} = buildEmail();
-    const phone = '971569659524';
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(body)}`, '_blank');
-  };
-
-  byId('copyBtn').onclick = async () => {
-    await navigator.clipboard.writeText(byId('preview').textContent);
-    alert('Email copied');
-  };
-
-  byId('downloadBtn').onclick = () => {
-    const text = byId('preview').textContent;
-    const blob = new Blob([text], {type:'text/plain'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url;
-    a.download = `dispute-${byId('orderId').value}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  byId('uploadBtn').onclick = () => alert('Upload is a placeholder—implement backend.');
-}
-
-if (document.readyState !== 'loading') {
-  init();
-} else {
-  document.addEventListener('DOMContentLoaded', init);
-}
-</script>
-
+    <script>
+        // Tab switching functionality
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+        
+        // Reason change handler
+        document.getElementById('reason').addEventListener('change', function() {
+            const sensitiveReasons = ['Missing item', 'Spilled/damaged', 'Hygiene'];
+            const evidenceInput = document.getElementById('evidence');
+            const evidenceHint = document.getElementById('evidence-hint');
+            
+            if (sensitiveReasons.includes(this.value)) {
+                evidenceInput.required = true;
+                evidenceHint.style.display = 'block';
+            } else {
+                evidenceInput.required = false;
+                evidenceHint.style.display = 'none';
+            }
+        });
+        
+        // Dispute form submission
+        document.getElementById('dispute-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = {
+                orderNumber: document.getElementById('order-number').value,
+                orderRef: document.getElementById('order-ref').value,
+                branch: document.getElementById('branch').value,
+                orderDate: document.getElementById('order-date').value,
+                subtotal: document.getElementById('subtotal').value,
+                adjustment: document.getElementById('adjustment').value,
+                reason: document.getElementById('reason').value,
+                evidence: document.getElementById('evidence').files
+            };
+            
+            // Show success notification
+            const notification = document.getElementById('submit-notification');
+            notification.innerHTML = `
+                <div class="notification notification-success">
+                    <div class="notification-icon">✅</div>
+                    <div>
+                        <strong>Dispute Submitted Successfully!</strong><br>
+                        Your dispute ID is: DIS-${Date.now()}
+                    </div>
+                </div>
+            `;
+            
+            // Reset form
+            this.reset();
+            
+            // Hide notification after 5 seconds
+            setTimeout(() => {
+                notification.innerHTML = '';
+            }, 5000);
+        });
+        
+        // Tone selection
+        document.querySelectorAll('.tone-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.tone-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+        
+        // Submit review function
+        function submitReview(disputeId) {
+            const decision = document.getElementById(`decision-${disputeId}`).value;
+            const amount = document.getElementById(`amount-${disputeId}`).value;
+            const notes = document.getElementById(`notes-${disputeId}`).value;
+            const tone = document.querySelector(`.tone-option.active`).dataset.tone;
+            
+            if (!decision) {
+                showNotification('review-notification', 'Please select a decision', 'error');
+                return;
+            }
+            
+            // Show success notification
+            showNotification('review-notification', 
+                `Dispute #${disputeId} has been ${decision} with ${tone} tone`, 
+                'success');
+            
+            // Update dispute status
+            const statusElement = document.querySelector(`#dispute-list .dispute-card:nth-child(1) .dispute-status`);
+            statusElement.textContent = decision === 'approved' ? 'Resolved' : 'Rejected';
+            statusElement.className = `dispute-status status-${decision === 'approved' ? 'resolved' : 'rejected'}`;
+        }
+        
+        // Notification helper
+        function showNotification(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `
+                <div class="notification notification-${type}">
+                    <div class="notification-icon">${type === 'success' ? '✅' : '❌'}</div>
+                    <div>${message}</div>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+        
+        // Set current date/time as default
+        document.getElementById('order-date').value = new Date().toISOString().slice(0, 16);
+    </script>
 </body>
 </html>
