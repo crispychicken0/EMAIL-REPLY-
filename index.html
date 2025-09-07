@@ -5,256 +5,638 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Compensation Dispute System</title>
     <style>
-        /* Previous styles remain the same */
-        
-        /* Dock System Styles */
-        .dock-container {
-            position: fixed;
-            bottom: 20px;
+        :root {
+            --primary-color: #ee5a24;
+            --primary-gradient: linear-gradient(135deg, #ee5a24 0%, #ff6b6b 100%);
+            --secondary-color: #667eea;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --dark-color: #343a40;
+            --light-color: #f8f9fa;
+            --border-color: #dee2e6;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
+            --shadow-lg: 0 8px 16px rgba(0,0,0,0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(45deg);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--light-color);
+            border-bottom: 3px solid var(--border-color);
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 150px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            color: var(--dark-color);
+            position: relative;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
             left: 50%;
             transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .tab:hover {
+            background: rgba(238, 90, 36, 0.05);
+            color: var(--primary-color);
+        }
+
+        .tab.active {
             background: white;
-            border-radius: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            padding: 10px 20px;
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab.active::after {
+            width: 80%;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+            animation: fadeInUp 0.5s ease;
+            min-height: 600px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Enhanced Dashboard */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--primary-gradient);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        /* Enhanced Claims Card */
+        .claim-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-md);
+            border-left: 5px solid var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .claim-card:hover {
+            transform: translateX(10px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .claim-header {
             display: flex;
-            gap: 15px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f1f3f5;
+        }
+
+        .claim-id {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.3rem;
+        }
+
+        .claim-status {
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-disputed {
+            background: #cce5ff;
+            color: #0066cc;
+        }
+
+        .status-resolved {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Enhanced Form */
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--dark-color);
+            font-size: 1rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: #f8f9fa;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(238, 90, 36, 0.1);
+        }
+
+        .btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-block;
+            margin-right: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+        }
+
+        /* Dock System */
+        .dock-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            box-shadow: var(--shadow-lg);
+            padding: 15px 25px;
+            display: flex;
+            gap: 20px;
             align-items: center;
             z-index: 1000;
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
-        
+
         .dock-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 10px 15px;
+            padding: 12px 20px;
             border-radius: 20px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             position: relative;
         }
-        
+
         .dock-item:hover {
-            background: #f8f9fa;
-            transform: translateY(-3px);
+            background: rgba(238, 90, 36, 0.1);
+            transform: translateY(-5px);
         }
-        
+
         .dock-item.active {
-            background: #fff8f8;
-            border: 2px solid #ee5a24;
+            background: var(--primary-gradient);
+            color: white;
         }
-        
+
         .dock-icon {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             margin-bottom: 5px;
         }
-        
+
         .dock-label {
-            font-size: 0.8rem;
-            color: #495057;
+            font-size: 0.85rem;
             font-weight: 600;
         }
-        
+
         .dock-badge {
             position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #dc3545;
+            top: -8px;
+            right: -8px;
+            background: var(--danger-color);
             color: white;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             font-weight: bold;
+            box-shadow: var(--shadow-sm);
         }
-        
-        /* Daily Summary Styles */
+
+        /* Daily Summary */
         .daily-summary {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 30px;
+            right: 30px;
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            width: 350px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            padding: 25px;
+            width: 380px;
             z-index: 999;
-            transition: all 0.3s ease;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
         }
-        
+
         .daily-summary.collapsed {
             width: auto;
-            padding: 15px;
+            padding: 20px;
         }
-        
+
         .daily-summary.collapsed .summary-content {
             display: none;
         }
-        
+
         .summary-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 2px solid var(--border-color);
         }
-        
+
         .summary-title {
             font-weight: 700;
-            color: #ee5a24;
-            font-size: 1.1rem;
+            color: var(--primary-color);
+            font-size: 1.2rem;
         }
-        
+
         .summary-date {
             color: #6c757d;
             font-size: 0.9rem;
         }
-        
+
         .summary-toggle {
             background: none;
             border: none;
             color: #6c757d;
             cursor: pointer;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+            transition: var(--transition);
         }
-        
+
+        .summary-toggle:hover {
+            color: var(--primary-color);
+            transform: rotate(180deg);
+        }
+
         .summary-stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 20px;
+            margin-bottom: 25px;
         }
-        
+
         .stat-box {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
+            background: var(--light-color);
+            border-radius: 12px;
+            padding: 20px;
             text-align: center;
-            transition: transform 0.3s ease;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
         }
-        
+
         .stat-box:hover {
-            transform: translateY(-3px);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
         }
-        
+
         .stat-number {
-            font-size: 1.8rem;
-            font-weight: 700;
+            font-size: 2rem;
+            font-weight: 800;
             margin-bottom: 5px;
         }
-        
+
         .stat-number.positive {
-            color: #28a745;
+            color: var(--success-color);
         }
-        
+
         .stat-number.negative {
-            color: #dc3545;
+            color: var(--danger-color);
         }
-        
+
         .stat-label {
             font-size: 0.9rem;
             color: #6c757d;
+            font-weight: 500;
         }
-        
-        .recent-activity {
-            margin-top: 20px;
-        }
-        
-        .activity-title {
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 10px;
-        }
-        
-        .activity-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            transition: background 0.3s ease;
-        }
-        
-        .activity-item:hover {
-            background: #e9ecef;
-        }
-        
-        .activity-icon {
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #ee5a24;
+
+        /* Enhanced AI Assistant */
+        .ai-assistant {
+            background: var(--secondary-gradient);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
             color: white;
-            border-radius: 50%;
-            font-size: 0.9rem;
+            text-align: center;
+            box-shadow: var(--shadow-md);
         }
-        
-        .activity-content {
-            flex: 1;
+
+        .ai-assistant h2 {
+            margin-bottom: 15px;
+            font-size: 2rem;
+            font-weight: 700;
         }
-        
-        .activity-text {
-            font-size: 0.9rem;
-            color: #495057;
-            margin-bottom: 3px;
-        }
-        
-        .activity-time {
-            font-size: 0.8rem;
-            color: #6c757d;
-        }
-        
-        /* Summary Chart */
-        .summary-chart {
-            margin-top: 20px;
-            height: 150px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .chart-bars {
+
+        .ai-chat-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-md);
+            height: 500px;
             display: flex;
-            align-items: flex-end;
-            height: 100%;
-            gap: 10px;
+            flex-direction: column;
+            overflow: hidden;
+            margin-bottom: 20px;
         }
-        
-        .chart-bar {
+
+        .ai-chat-header {
+            background: var(--secondary-color);
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .ai-chat-header .ai-icon {
+            font-size: 1.8rem;
+        }
+
+        .ai-chat-messages {
             flex: 1;
-            background: linear-gradient(to top, #ee5a24, #ff6b6b);
-            border-radius: 5px 5px 0 0;
-            position: relative;
-            transition: all 0.3s ease;
+            overflow-y: auto;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
-        
-        .chart-bar:hover {
-            opacity: 0.8;
+
+        .ai-message {
+            max-width: 80%;
+            padding: 18px 25px;
+            border-radius: 20px;
+            line-height: 1.6;
+            font-size: 1rem;
+            box-shadow: var(--shadow-sm);
         }
-        
-        .chart-label {
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.7rem;
-            color: #6c757d;
-            white-space: nowrap;
+
+        .ai-user {
+            background: #e3f2fd;
+            color: #0d47a1;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
         }
-        
-        /* Previous styles remain the same */
+
+        .ai-bot {
+            background: #f1f3f5;
+            color: #495057;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .header {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .daily-summary {
+                width: 90%;
+                right: 5%;
+            }
+
+            .dock-container {
+                bottom: 20px;
+                padding: 10px 15px;
+                gap: 10px;
+            }
+
+            .dock-item {
+                padding: 8px 12px;
+            }
+
+            .dock-icon {
+                font-size: 1.4rem;
+            }
+
+            .dock-label {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e55a24;
+        }
     </style>
 </head>
 <body>
@@ -274,7 +656,61 @@
             <div class="tab" onclick="switchTab('legal')">Legal References</div>
         </div>
         
-        <!-- Previous tabs remain the same -->
+        <!-- Dashboard Tab -->
+        <div id="dashboard-tab" class="tab-content active">
+            <h2>Compensation Claims Overview</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Active Claims</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">AED 3,450</div>
+                    <div class="stat-label">At Risk Amount</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">85%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">Days to Respond</div>
+                </div>
+            </div>
+            
+            <div class="claim-card">
+                <div class="claim-header">
+                    <div class="claim-id">Recent Claim: #CLM-2023-7845</div>
+                    <div class="claim-status status-pending">Pending Response</div>
+                </div>
+                
+                <div class="claim-details">
+                    <p><strong>Platform:</strong> Noon</p>
+                    <p><strong>Order Number:</strong> FF97NN6YOH1H65A</p>
+                    <p><strong>Customer:</strong> Ahmed Hassan</p>
+                    <p><strong>Restaurant:</strong> Crispy Chicken - Al Mushrif</p>
+                    <p><strong>Claim Amount:</strong> AED 14.00</p>
+                    <p><strong>Reason:</strong> Missing item - Outlet</p>
+                    <p><strong>Claim Date:</strong> 2023-10-05 14:30:00</p>
+                    <p><strong>Deadline:</strong> 2023-10-12 14:30:00 (7 days left)</p>
+                </div>
+                
+                <div class="evidence-section">
+                    <h4>Recommended Actions</h4>
+                    <p>Based on our analysis, this claim has a high chance of success if you provide delivery evidence.</p>
+                    <div class="evidence-item">
+                        <div class="evidence-icon">📹</div>
+                        <div>Submit delivery confirmation report</div>
+                    </div>
+                    <div class="evidence-item">
+                        <div class="evidence-icon">📷</div>
+                        <div>Attach photos of delivered order</div>
+                    </div>
+                    <button class="btn" onclick="switchTab('dispute'); document.getElementById('claim-id').value = 'CLM-2023-7845';">Submit Dispute Now</button>
+                </div>
+            </div>
+        </div>
         
         <!-- Daily Summary -->
         <div class="daily-summary" id="daily-summary">
@@ -301,32 +737,6 @@
                     <div class="stat-box">
                         <div class="stat-number">87%</div>
                         <div class="stat-label">Success Rate</div>
-                    </div>
-                </div>
-                
-                <div class="summary-chart">
-                    <div class="chart-bars">
-                        <div class="chart-bar" style="height: 60%;">
-                            <div class="chart-label">Mon</div>
-                        </div>
-                        <div class="chart-bar" style="height: 80%;">
-                            <div class="chart-label">Tue</div>
-                        </div>
-                        <div class="chart-bar" style="height: 45%;">
-                            <div class="chart-label">Wed</div>
-                        </div>
-                        <div class="chart-bar" style="height: 90%;">
-                            <div class="chart-label">Thu</div>
-                        </div>
-                        <div class="chart-bar" style="height: 70%;">
-                            <div class="chart-label">Fri</div>
-                        </div>
-                        <div class="chart-bar" style="height: 85%;">
-                            <div class="chart-label">Sat</div>
-                        </div>
-                        <div class="chart-bar" style="height: 75%;">
-                            <div class="chart-label">Sun</div>
-                        </div>
                     </div>
                 </div>
                 
@@ -357,83 +767,94 @@
             </div>
         </div>
         
-        <!-- Previous tabs content remains the same -->
-    </div>
-    
-    <!-- Dock System -->
-    <div class="dock-container">
-        <div class="dock-item active" onclick="switchTab('dashboard'); updateDockActive(this);">
-            <div class="dock-icon">📊</div>
-            <div class="dock-label">Dashboard</div>
+        <!-- Dock System -->
+        <div class="dock-container">
+            <div class="dock-item active" onclick="switchTab('dashboard'); updateDockActive(this);">
+                <div class="dock-icon">📊</div>
+                <div class="dock-label">Dashboard</div>
+            </div>
+            <div class="dock-item" onclick="switchTab('claims'); updateDockActive(this);">
+                <div class="dock-icon">📋</div>
+                <div class="dock-label">Claims</div>
+                <div class="dock-badge">3</div>
+            </div>
+            <div class="dock-item" onclick="switchTab('dispute'); updateDockActive(this);">
+                <div class="dock-icon">✍️</div>
+                <div class="dock-label">Dispute</div>
+            </div>
+            <div class="dock-item" onclick="switchTab('templates'); updateDockActive(this);">
+                <div class="dock-icon">📧</div>
+                <div class="dock-label">Templates</div>
+            </div>
+            <div class="dock-item" onclick="switchTab('ai-assistant'); updateDockActive(this);">
+                <div class="dock-icon">🤖</div>
+                <div class="dock-label">AI</div>
+            </div>
+            <div class="dock-item" onclick="switchTab('settings'); updateDockActive(this);">
+                <div class="dock-icon">⚙️</div>
+                <div class="dock-label">Settings</div>
+            </div>
         </div>
-        <div class="dock-item" onclick="switchTab('claims'); updateDockActive(this);">
-            <div class="dock-icon">📋</div>
-            <div class="dock-label">Claims</div>
-            <div class="dock-badge">3</div>
-        </div>
-        <div class="dock-item" onclick="switchTab('dispute'); updateDockActive(this);">
-            <div class="dock-icon">✍️</div>
-            <div class="dock-label">Dispute</div>
-        </div>
-        <div class="dock-item" onclick="switchTab('templates'); updateDockActive(this);">
-            <div class="dock-icon">📧</div>
-            <div class="dock-label">Templates</div>
-        </div>
-        <div class="dock-item" onclick="switchTab('ai-assistant'); updateDockActive(this);">
-            <div class="dock-icon">🤖</div>
-            <div class="dock-label">AI</div>
-        </div>
-        <div class="dock-item" onclick="switchTab('settings'); updateDockActive(this);">
-            <div class="dock-icon">⚙️</div>
-            <div class="dock-label">Settings</div>
-        </div>
-    </div>
 
-    <script>
-        // Previous JavaScript functions remain the same
-        
-        // Initialize daily summary date
-        function initializeDailySummary() {
-            const dateElement = document.getElementById('summary-date');
-            const today = new Date();
-            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-            dateElement.textContent = today.toLocaleDateString('en-US', options);
-        }
-        
-        // Toggle daily summary
-        function toggleSummary() {
-            const summary = document.getElementById('daily-summary');
-            summary.classList.toggle('collapsed');
-        }
-        
-        // Update dock active state
-        function updateDockActive(element) {
-            document.querySelectorAll('.dock-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            element.classList.add('active');
-        }
-        
-        // Update dock badges
-        function updateDockBadges() {
-            const claimsBadge = document.querySelector('.dock-badge');
-            if (claimsBadge) {
-                // Simulate updating badge count
-                const activeClaimsCount = Math.floor(Math.random() * 5) + 1;
-                claimsBadge.textContent = activeClaimsCount;
+        <script>
+            // Initialize daily summary date
+            function initializeDailySummary() {
+                const dateElement = document.getElementById('summary-date');
+                const today = new Date();
+                const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+                dateElement.textContent = today.toLocaleDateString('en-US', options);
             }
-        }
-        
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeDailySummary();
-            updateDockBadges();
-            
-            // Simulate real-time updates
-            setInterval(updateDockBadges, 30000); // Update every 30 seconds
-        });
-        
-        // Previous JavaScript functions remain the same
-    </script>
+
+            // Toggle daily summary
+            function toggleSummary() {
+                const summary = document.getElementById('daily-summary');
+                summary.classList.toggle('collapsed');
+            }
+
+            // Update dock active state
+            function updateDockActive(element) {
+                document.querySelectorAll('.dock-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                element.classList.add('active');
+                
+                // Update tab content
+                const tabName = element.querySelector('.dock-label').textContent.toLowerCase();
+                switchTab(tabName);
+            }
+
+            // Initialize on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                initializeDailySummary();
+                
+                // Simulate real-time updates
+                setInterval(() => {
+                    const badge = document.querySelector('.dock-badge');
+                    if (badge) {
+                        const activeClaimsCount = Math.floor(Math.random() * 5) + 1;
+                        badge.textContent = activeClaimsCount;
+                    }
+                }, 30000); // Update every 30 seconds
+            });
+
+            // Tab switching function
+            function switchTab(tabName) {
+                // Update tab buttons
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+                // Update tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                const tabContent = document.getElementById(`${tabName}-tab`);
+                if (tabContent) {
+                    tabContent.classList.add('active');
+                }
+            }
+        </script>
+    </div>
 </body>
 </html>
