@@ -19,8 +19,8 @@ export default function DashboardPage() {
     <div>
       <PageHeader title="Dashboard" subtitle="Your real-time compensation claims overview." />
       
-      <div className="grid gap-8 lg:grid-cols-2">
-        <div className="flex flex-col gap-8">
+      <div className="grid gap-8 lg:grid-cols-3">
+        <div className="lg:col-span-1 flex flex-col gap-8">
             {stats.map((stat) => (
               <Card key={stat.title}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -34,7 +34,7 @@ export default function DashboardPage() {
               </Card>
             ))}
         </div>
-        <div className="space-y-8">
+        <div className="lg:col-span-2 space-y-8">
             <div>
                 <h2 className="text-xl font-semibold mb-4">Most Recent Claim</h2>
                 <Card className="overflow-hidden">
