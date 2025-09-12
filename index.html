@@ -1,1465 +1,593 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurant Compensation Dispute System</title>
-    <style>
-        :root {
-            --primary-color: #ee5a24;
-            --primary-gradient: linear-gradient(135deg, #ee5a24 0%, #ff6b6b 100%);
-            --secondary-color: #667eea;
-            --secondary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --dark-color: #343a40;
-            --light-color: #f8f9fa;
-            --border-color: #dee2e6;
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
-            --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
-            --shadow-lg: 0 8px 16px rgba(0,0,0,0.2);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            position: relative;
-        }
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-            position: relative;
-        }
-        .header {
-            background: var(--primary-gradient);
-            color: white;
-            padding: 40px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            transform: rotate(45deg);
-        }
-        .header h1 {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            font-weight: 800;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-            position: relative;
-            z-index: 1;
-        }
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.95;
-            font-weight: 400;
-            position: relative;
-            z-index: 1;
-        }
-        .tabs {
-            display: flex;
-            background: var(--light-color);
-            border-bottom: 3px solid var(--border-color);
-            flex-wrap: wrap;
-            position: relative;
-        }
-        .tab {
-            flex: 1;
-            min-width: 150px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            font-weight: 600;
-            color: var(--dark-color);
-            position: relative;
-            border-bottom: 3px solid transparent;
-        }
-        .tab::after {
-            content: '';
-            position: absolute;
-            bottom: -3px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 3px;
-            background: var(--primary-color);
-            transition: width 0.3s ease;
-        }
-        .tab:hover {
-            background: rgba(238, 90, 36, 0.05);
-            color: var(--primary-color);
-        }
-        .tab.active {
-            background: white;
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-        }
-        .tab.active::after {
-            width: 80%;
-        }
-        .tab-content {
-            display: none;
-            padding: 40px;
-            animation: fadeInUp 0.5s ease;
-            min-height: 600px;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        /* Enhanced Dashboard */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-        .stat-card {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border-color);
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: var(--primary-gradient);
-        }
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-        .stat-value {
-            font-size: 3rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .stat-label {
-            font-size: 1.1rem;
-            color: #6c757d;
-            font-weight: 500;
-        }
-        /* Enhanced Claims Card */
-        .claim-card {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow-md);
-            border-left: 5px solid var(--primary-color);
-            transition: var(--transition);
-        }
-        .claim-card:hover {
-            transform: translateX(10px);
-            box-shadow: var(--shadow-lg);
-        }
-        .claim-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #f1f3f5;
-        }
-        .claim-id {
-            font-weight: 700;
-            color: var(--primary-color);
-            font-size: 1.3rem;
-        }
-        .claim-status {
-            padding: 10px 25px;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-        .status-disputed {
-            background: #cce5ff;
-            color: #0066cc;
-        }
-        .status-resolved {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-        .status-rejected {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        /* Enhanced Form */
-        .form-group {
-            margin-bottom: 30px;
-        }
-        label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: var(--dark-color);
-            font-size: 1rem;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: var(--transition);
-            background: #f8f9fa;
-        }
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            background: white;
-            box-shadow: 0 0 0 3px rgba(238, 90, 36, 0.1);
-        }
-        .btn {
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-block;
-            margin-right: 15px;
-            margin-bottom: 15px;
-            box-shadow: var(--shadow-sm);
-        }
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
-        }
-        .btn:active {
-            transform: translateY(-1px);
-        }
-        .btn-secondary {
-            background: #6c757d;
-        }
-        .btn-success {
-            background: var(--success-color);
-        }
-        .btn-danger {
-            background: var(--danger-color);
-        }
-        /* Evidence Section */
-        .evidence-section {
-            margin-top: 30px;
-        }
-        .evidence-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-        }
-        .evidence-icon {
-            font-size: 1.5rem;
-            margin-right: 15px;
-        }
-        /* Dock System */
-        .dock-container {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 30px;
-            box-shadow: var(--shadow-lg);
-            padding: 15px 25px;
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            z-index: 1000;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        .dock-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 12px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-        }
-        .dock-item:hover {
-            background: rgba(238, 90, 36, 0.1);
-            transform: translateY(-5px);
-        }
-        .dock-item.active {
-            background: var(--primary-gradient);
-            color: white;
-        }
-        .dock-icon {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
-        }
-        .dock-label {
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-        .dock-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: var(--danger-color);
-            color: white;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: bold;
-            box-shadow: var(--shadow-sm);
-        }
-        /* Daily Summary */
-        .daily-summary {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: var(--shadow-lg);
-            padding: 25px;
-            width: 380px;
-            z-index: 999;
-            transition: var(--transition);
-            border: 1px solid var(--border-color);
-        }
-        .daily-summary.collapsed {
-            width: auto;
-            padding: 20px;
-        }
-        .daily-summary.collapsed .summary-content {
-            display: none;
-        }
-        .summary-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--border-color);
-        }
-        .summary-title {
-            font-weight: 700;
-            color: var(--primary-color);
-            font-size: 1.2rem;
-        }
-        .summary-date {
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-        .summary-toggle {
-            background: none;
-            border: none;
-            color: #6c757d;
-            cursor: pointer;
-            font-size: 1.3rem;
-            transition: var(--transition);
-        }
-        .summary-toggle:hover {
-            color: var(--primary-color);
-            transform: rotate(180deg);
-        }
-        .summary-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-        .stat-box {
-            background: var(--light-color);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            transition: var(--transition);
-            border: 1px solid var(--border-color);
-        }
-        .stat-box:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-md);
-        }
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 5px;
-        }
-        .stat-number.positive {
-            color: var(--success-color);
-        }
-        .stat-number.negative {
-            color: var(--danger-color);
-        }
-        .stat-label {
-            font-size: 0.9rem;
-            color: #6c757d;
-            font-weight: 500;
-        }
-        /* Recent Activity */
-        .recent-activity {
-            margin-top: 20px;
-        }
-        .activity-title {
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--dark-color);
-        }
-        .activity-item {
-            display: flex;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .activity-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-        .activity-icon {
-            font-size: 1.2rem;
-            margin-right: 15px;
-            color: var(--primary-color);
-        }
-        .activity-content {
-            flex: 1;
-        }
-        .activity-text {
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-        .activity-time {
-            font-size: 0.85rem;
-            color: #6c757d;
-        }
-        /* Claims Tab */
-        .claims-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 30px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: var(--shadow-md);
-        }
-        .claims-table th, .claims-table td {
-            padding: 15px 20px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .claims-table th {
-            background: var(--light-color);
-            font-weight: 600;
-            color: var(--dark-color);
-        }
-        .claims-table tr:hover {
-            background: rgba(238, 90, 36, 0.05);
-        }
-        /* Dispute Form */
-        .dispute-form {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .form-section {
-            background: var(--light-color);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            border: 1px solid var(--border-color);
-        }
-        .form-section-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: var(--primary-color);
-        }
-        /* Email Templates */
-        .template-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border-color);
-            transition: var(--transition);
-        }
-        .template-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-        .template-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .template-name {
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-        .template-platform {
-            background: var(--light-color);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--dark-color);
-        }
-        /* AI Assistant */
-        .ai-assistant {
-            background: var(--secondary-gradient);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            color: white;
-            text-align: center;
-            box-shadow: var(--shadow-md);
-        }
-        .ai-assistant h2 {
-            margin-bottom: 15px;
-            font-size: 2rem;
-            font-weight: 700;
-        }
-        .ai-chat-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: var(--shadow-md);
-            height: 500px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        .ai-chat-header {
-            background: var(--secondary-color);
-            color: white;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .ai-chat-header .ai-icon {
-            font-size: 1.8rem;
-        }
-        .ai-chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 25px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .ai-message {
-            max-width: 80%;
-            padding: 18px 25px;
-            border-radius: 20px;
-            line-height: 1.6;
-            font-size: 1rem;
-            box-shadow: var(--shadow-sm);
-        }
-        .ai-user {
-            background: #e3f2fd;
-            color: #0d47a1;
-            align-self: flex-end;
-            border-bottom-right-radius: 5px;
-        }
-        .ai-bot {
-            background: #f1f3f5;
-            color: #495057;
-            align-self: flex-start;
-            border-bottom-left-radius: 5px;
-        }
-        .ai-input-container {
-            padding: 20px;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            gap: 15px;
-        }
-        .ai-input {
-            flex: 1;
-            padding: 15px;
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            font-size: 1rem;
-        }
-        .ai-send-btn {
-            background: var(--secondary-color);
-            color: white;
-            border: none;
-            padding: 15px 25px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .ai-send-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
-        }
-        /* Settings */
-        .settings-section {
-            margin-bottom: 40px;
-        }
-        .settings-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border-color);
-        }
-        .settings-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .settings-title {
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-        /* Toggle Switch */
-        .toggle-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-        .toggle-label {
-            font-weight: 500;
-        }
-        .toggle-switch {
-            position: relative;
-            width: 60px;
-            height: 30px;
-            background: #ccc;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .toggle-switch.active {
-            background: var(--primary-color);
-        }
-        .toggle-slider {
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 24px;
-            height: 24px;
-            background: white;
-            border-radius: 50%;
-            transition: var(--transition);
-        }
-        .toggle-switch.active .toggle-slider {
-            transform: translateX(30px);
-        }
-        /* Legal References */
-        .legal-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border-color);
-        }
-        .legal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .legal-title {
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-        .legal-category {
-            background: var(--light-color);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--dark-color);
-        }
-        .legal-content {
-            line-height: 1.6;
-            color: #495057;
-        }
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                margin: 10px;
-                border-radius: 15px;
-            }
-            .header {
-                padding: 25px;
-            }
-            .header h1 {
-                font-size: 2rem;
-            }
-            .tabs {
-                flex-direction: column;
-            }
-            .tab {
-                border-bottom: 1px solid var(--border-color);
-            }
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            .daily-summary {
-                width: 90%;
-                right: 5%;
-            }
-            .dock-container {
-                bottom: 20px;
-                padding: 10px 15px;
-                gap: 10px;
-            }
-            .dock-item {
-                padding: 8px 12px;
-            }
-            .dock-icon {
-                font-size: 1.4rem;
-            }
-            .dock-label {
-                font-size: 0.75rem;
-            }
-        }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #e55a24;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dispute Management System — Crispy Chicken</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .small {font-size:13px;color:#6b7280}
+    .status-badge{padding:4px 8px;border-radius:999px;font-weight:600;font-size:12px}
+  </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Restaurant Compensation Dispute System</h1>
-            <p>Contest unjustified compensation claims from delivery platforms and protect your restaurant's revenue</p>
+<body class="bg-gray-50 min-h-screen text-gray-800">
+  <div class="container mx-auto p-6">
+    <header class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-bold">Dispute Management — Crispy Chicken</h1>
+      <div class="text-right small">
+        <div>Call Center Manager: Ahmed Kenawy</div>
+        <div>Delivery Hotline: 600-527-488</div>
+      </div>
+    </header>
+    <!-- Controls -->
+    <div class="grid md:grid-cols-3 gap-4 mb-6">
+      <div class="md:col-span-2 bg-white p-4 rounded shadow">
+        <label class="block font-semibold mb-2">Paste full platform email / dispute text</label>
+        <textarea id="emailText" class="w-full border rounded p-3 h-40" placeholder="Paste Noon / Careem / Talabat email here..."></textarea>
+        <div class="mt-3 flex gap-2">
+          <button id="parseBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Extract & Add</button>
+          <button id="previewBtn" class="bg-gray-200 px-4 py-2 rounded">Preview Extract</button>
+          <button id="clearBtn" class="bg-gray-300 px-4 py-2 rounded">Clear</button>
         </div>
-        
-        <div class="tabs">
-            <div class="tab active" onclick="switchTab('dashboard')">Dashboard</div>
-            <div class="tab" onclick="switchTab('claims')">Active Claims</div>
-            <div class="tab" onclick="switchTab('dispute')">Submit Dispute</div>
-            <div class="tab" onclick="switchTab('templates')">Email Templates</div>
-            <div class="tab" onclick="switchTab('ai-assistant')">AI Assistant</div>
-            <div class="tab" onclick="switchTab('settings')">Settings</div>
-            <div class="tab" onclick="switchTab('legal')">Legal References</div>
+        <p class="small mt-2">Supports detection of Order IDs (FF.../numeric), Branch, Date, AED amounts, Reference and reason keywords. Edit fields if needed before saving.</p>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+        <label class="block font-semibold mb-2">Quick Filters / Actions</label>
+        <div class="flex flex-col gap-2">
+          <select id="filterBranch" class="border rounded p-2">
+            <option value="">-- All Branches --</option>
+          </select>
+          <select id="filterStatus" class="border rounded p-2">
+            <option value="">-- All Statuses --</option>
+            <option>Pending</option>
+            <option>Rejected</option>
+            <option>Approved</option>
+            <option>Resolved</option>
+          </select>
+          <div class="flex gap-2 mt-2">
+            <button id="exportBtn" class="flex-1 bg-indigo-600 text-white px-3 py-2 rounded">Export CSV</button>
+            <button id="downloadEmlAll" class="flex-1 bg-emerald-600 text-white px-3 py-2 rounded">Download .eml (All)</button>
+          </div>
         </div>
-        
-        <!-- Dashboard Tab -->
-        <div id="dashboard-tab" class="tab-content active">
-            <h2>Compensation Claims Overview</h2>
-            
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value">12</div>
-                    <div class="stat-label">Active Claims</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">AED 3,450</div>
-                    <div class="stat-label">At Risk Amount</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">85%</div>
-                    <div class="stat-label">Success Rate</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">7</div>
-                    <div class="stat-label">Days to Respond</div>
-                </div>
-            </div>
-            
-            <div class="claim-card">
-                <div class="claim-header">
-                    <div class="claim-id">Recent Claim: #CLM-2023-7845</div>
-                    <div class="claim-status status-pending">Pending Response</div>
-                </div>
-                
-                <div class="claim-details">
-                    <p><strong>Platform:</strong> Noon</p>
-                    <p><strong>Order Number:</strong> FF97NN6YOH1H65A</p>
-                    <p><strong>Customer:</strong> Ahmed Hassan</p>
-                    <p><strong>Restaurant:</strong> Crispy Chicken - Al Mushrif</p>
-                    <p><strong>Claim Amount:</strong> AED 14.00</p>
-                    <p><strong>Reason:</strong> Missing item - Outlet</p>
-                    <p><strong>Claim Date:</strong> 2023-10-05 14:30:00</p>
-                    <p><strong>Deadline:</strong> 2023-10-12 14:30:00 (7 days left)</p>
-                </div>
-                
-                <div class="evidence-section">
-                    <h4>Recommended Actions</h4>
-                    <p>Based on our analysis, this claim has a high chance of success if you provide delivery evidence.</p>
-                    <div class="evidence-item">
-                        <div class="evidence-icon">📹</div>
-                        <div>Submit delivery confirmation report</div>
-                    </div>
-                    <div class="evidence-item">
-                        <div class="evidence-icon">📷</div>
-                        <div>Attach photos of delivered order</div>
-                    </div>
-                    <button class="btn" onclick="switchTab('dispute'); document.getElementById('claim-id').value = 'CLM-2023-7845';">Submit Dispute Now</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Active Claims Tab -->
-        <div id="claims-tab" class="tab-content">
-            <h2>Active Claims</h2>
-            
-            <table class="claims-table">
-                <thead>
-                    <tr>
-                        <th>Claim ID</th>
-                        <th>Platform</th>
-                        <th>Order Number</th>
-                        <th>Claim Amount</th>
-                        <th>Status</th>
-                        <th>Deadline</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>#CLM-2023-7845</td>
-                        <td>Noon</td>
-                        <td>FF97NN6YOH1H65A</td>
-                        <td>AED 14.00</td>
-                        <td><span class="claim-status status-pending">Pending</span></td>
-                        <td>2023-10-12</td>
-                        <td><button class="btn" onclick="switchTab('dispute'); document.getElementById('claim-id').value = 'CLM-2023-7845';">Dispute</button></td>
-                    </tr>
-                    <tr>
-                        <td>#CLM-2023-7846</td>
-                        <td>Careem</td>
-                        <td>CR123456789</td>
-                        <td>AED 25.50</td>
-                        <td><span class="claim-status status-disputed">Disputed</span></td>
-                        <td>2023-10-15</td>
-                        <td><button class="btn btn-secondary">View</button></td>
-                    </tr>
-                    <tr>
-                        <td>#CLM-2023-7847</td>
-                        <td> talabat</td>
-                        <td>TAL987654321</td>
-                        <td>AED 18.00</td>
-                        <td><span class="claim-status status-pending">Pending</span></td>
-                        <td>2023-10-18</td>
-                        <td><button class="btn" onclick="switchTab('dispute'); document.getElementById('claim-id').value = 'CLM-2023-7847';">Dispute</button></td>
-                    </tr>
-                    <tr>
-                        <td>#CLM-2023-7848</td>
-                        <td>Noon</td>
-                        <td>FF98NN6YOH1H66A</td>
-                        <td>AED 32.00</td>
-                        <td><span class="claim-status status-resolved">Resolved</span></td>
-                        <td>2023-10-10</td>
-                        <td><button class="btn btn-secondary">View</button></td>
-                    </tr>
-                    <tr>
-                        <td>#CLM-2023-7849</td>
-                        <td>Careem</td>
-                        <td>CR987654321</td>
-                        <td>AED 12.50</td>
-                        <td><span class="claim-status status-rejected">Rejected</span></td>
-                        <td>2023-10-08</td>
-                        <td><button class="btn btn-secondary">View</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- Submit Dispute Tab -->
-        <div id="dispute-tab" class="tab-content">
-            <h2>Submit Dispute</h2>
-            
-            <div class="dispute-form">
-                <form id="dispute-form">
-                    <div class="form-section">
-                        <div class="form-section-title">Claim Information</div>
-                        <div class="form-group">
-                            <label for="claim-id">Claim ID</label>
-                            <input type="text" id="claim-id" name="claim-id" placeholder="Enter claim ID">
-                        </div>
-                        <div class="form-group">
-                            <label for="platform">Platform</label>
-                            <select id="platform" name="platform">
-                                <option value="">Select Platform</option>
-                                <option value="noon">Noon</option>
-                                <option value="careem">Careem</option>
-                                <option value="talabat">talabat</option>
-                                <option value="deliveroo">Deliveroo</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="order-number">Order Number</label>
-                            <input type="text" id="order-number" name="order-number" placeholder="Enter order number">
-                        </div>
-                    </div>
-                    
-                    <div class="form-section">
-                        <div class="form-section-title">Dispute Details</div>
-                        <div class="form-group">
-                            <label for="dispute-reason">Dispute Reason</label>
-                            <select id="dispute-reason" name="dispute-reason">
-                                <option value="">Select Reason</option>
-                                <option value="delivered">Order Delivered Successfully</option>
-                                <option value="wrong-address">Wrong Delivery Address Provided</option>
-                                <option value="customer-refused">Customer Refused Order</option>
-                                <option value="damaged">Order Damaged During Delivery</option>
-                                <option value="fraudulent">Fraudulent Claim</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="dispute-description">Description</label>
-                            <textarea id="dispute-description" name="dispute-description" rows="5" placeholder="Provide detailed explanation of your dispute"></textarea>
-                        </div>
-                    </div>
-                    
-                    <div class="form-section">
-                        <div class="form-section-title">Evidence</div>
-                        <div class="form-group">
-                            <label for="evidence-files">Upload Evidence Files</label>
-                            <input type="file" id="evidence-files" name="evidence-files" multiple>
-                            <p style="margin-top: 10px; font-size: 0.9rem; color: #6c757d;">Supported formats: JPG, PNG, PDF, DOC (Max 5MB per file)</p>
-                        </div>
-                        <div class="form-group">
-                            <label for="delivery-report">Delivery Confirmation Report</label>
-                            <textarea id="delivery-report" name="delivery-report" rows="3" placeholder="Paste delivery confirmation details here"></textarea>
-                        </div>
-                    </div>
-                    
-                    <div style="text-align: center;">
-                        <button type="submit" class="btn btn-success">Submit Dispute</button>
-                        <button type="button" class="btn btn-secondary" onclick="switchTab('dashboard')">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Email Templates Tab -->
-        <div id="templates-tab" class="tab-content">
-            <h2>Email Templates</h2>
-            
-            <div class="template-card">
-                <div class="template-header">
-                    <div class="template-name">Standard Dispute Response</div>
-                    <div class="template-platform">Noon</div>
-                </div>
-                <div class="template-content">
-                    <p><strong>Subject:</strong> Response to Compensation Claim #<span id="template-claim-id"></span></p>
-                    <p>Dear Noon Support Team,</p>
-                    <p>We are writing in response to the compensation claim #<span id="template-claim-id-2"></span> for order <span id="template-order-number"></span>. We would like to dispute this claim as we have evidence that the order was delivered successfully to the customer.</p>
-                    <p>Attached to this email, you will find:</p>
-                    <ul>
-                        <li>Delivery confirmation report</li>
-                        <li>Photos of the delivered order</li>
-                        <li>Customer signature confirmation</li>
-                    </ul>
-                    <p>We kindly request that you review our evidence and reverse the compensation charge. If you require any additional information, please do not hesitate to contact us.</p>
-                    <p>Best regards,<br>Restaurant Management Team</p>
-                </div>
-                <div style="text-align: right;">
-                    <button class="btn">Use Template</button>
-                </div>
-            </div>
-            
-            <div class="template-card">
-                <div class="template-header">
-                    <div class="template-name">Follow-up on Disputed Claim</div>
-                    <div class="template-platform">Careem</div>
-                </div>
-                <div class="template-content">
-                    <p><strong>Subject:</strong> Follow-up: Disputed Claim #<span id="template-claim-id-3"></span></p>
-                    <p>Dear Careem Support Team,</p>
-                    <p>We are following up on our dispute for claim #<span id="template-claim-id-4"></span> submitted on <span id="template-date"></span>. We have not yet received a response regarding our dispute and the deadline is approaching.</p>
-                    <p>As a reminder, we have provided clear evidence that the order was delivered successfully. We kindly request an update on the status of our dispute.</p>
-                    <p>Please let us know if there is any additional information required from our side to resolve this matter.</p>
-                    <p>Best regards,<br>Restaurant Management Team</p>
-                </div>
-                <div style="text-align: right;">
-                    <button class="btn">Use Template</button>
-                </div>
-            </div>
-            
-            <div class="template-card">
-                <div class="template-header">
-                    <div class="template-name">Appeal Rejected Claim</div>
-                    <div class="template-platform">talabat</div>
-                </div>
-                <div class="template-content">
-                    <p><strong>Subject:</strong> Appeal: Rejected Claim #<span id="template-claim-id-5"></span></p>
-                    <p>Dear talabat Support Team,</p>
-                    <p>We are writing to appeal the rejection of our dispute for claim #<span id="template-claim-id-6"></span>. We believe the rejection was made in error as we have substantial evidence proving the order was delivered successfully.</p>
-                    <p>Our evidence includes:</p>
-                    <ul>
-                        <li>GPS tracking showing delivery to the correct address</li>
-                        <li>Photo evidence of the delivered order</li>
-                        <li>Customer confirmation via SMS</li>
-                    </ul>
-                    <p>We kindly request that you review our case again and reverse the compensation charge. This claim is unjustified and is causing significant financial impact to our business.</p>
-                    <p>Best regards,<br>Restaurant Management Team</p>
-                </div>
-                <div style="text-align: right;">
-                    <button class="btn">Use Template</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- AI Assistant Tab -->
-        <div id="ai-assistant-tab" class="tab-content">
-            <div class="ai-assistant">
-                <h2>AI Assistant</h2>
-                <p>Get help with your compensation disputes</p>
-            </div>
-            
-            <div class="ai-chat-container">
-                <div class="ai-chat-header">
-                    <div class="ai-icon">🤖</div>
-                    <div>
-                        <div style="font-weight: 600;">Dispute AI Assistant</div>
-                        <div style="font-size: 0.85rem; opacity: 0.8;">Ready to help with your compensation disputes</div>
-                    </div>
-                </div>
-                
-                <div class="ai-chat-messages" id="ai-messages">
-                    <div class="ai-message ai-bot">
-                        Hello! I'm your AI assistant for handling compensation disputes. I can help you analyze claims, draft dispute responses, and provide strategic advice. How can I assist you today?
-                    </div>
-                </div>
-                
-                <div class="ai-input-container">
-                    <input type="text" class="ai-input" id="ai-input" placeholder="Type your message here...">
-                    <button class="ai-send-btn" onclick="sendMessage()">
-                        <span>Send</span>
-                        <span>➤</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Settings Tab -->
-        <div id="settings-tab" class="tab-content">
-            <h2>Settings</h2>
-            
-            <div class="settings-section">
-                <div class="settings-card">
-                    <div class="settings-header">
-                        <div class="settings-title">Notification Settings</div>
-                    </div>
-                    
-                    <div class="toggle-container">
-                        <div class="toggle-label">Email Notifications</div>
-                        <div class="toggle-switch active" onclick="toggleSwitch(this)">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="toggle-container">
-                        <div class="toggle-label">Push Notifications</div>
-                        <div class="toggle-switch" onclick="toggleSwitch(this)">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="toggle-container">
-                        <div class="toggle-label">SMS Alerts</div>
-                        <div class="toggle-switch" onclick="toggleSwitch(this)">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="settings-card">
-                    <div class="settings-header">
-                        <div class="settings-title">Platform Integration</div>
-                    </div>
-                    
-                    <div class="toggle-container">
-                        <div class="toggle-label">Noon Integration</div>
-                        <div class="toggle-switch active" onclick="toggleSwitch(this)">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="toggle-container">
-                        <div class="toggle-label">Careem Integration</div>
-                        <div class="toggle-switch active" onclick="toggleSwitch(this)">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="toggle-container">
-                        <div class="toggle-label">talabat Integration</div>
-                        <div class="toggle-switch" onclick="toggleSwitch(this)">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="settings-card">
-                    <div class="settings-header">
-                        <div class="settings-title">Account Settings</div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="restaurant-name">Restaurant Name</label>
-                        <input type="text" id="restaurant-name" value="Crispy Chicken - Al Mushrif">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="contact-email">Contact Email</label>
-                        <input type="email" id="contact-email" value="contact@crispychicken.ae">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="contact-phone">Contact Phone</label>
-                        <input type="tel" id="contact-phone" value="+971 55 123 4567">
-                    </div>
-                    
-                    <button class="btn btn-success">Save Changes</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Legal References Tab -->
-        <div id="legal-tab" class="tab-content">
-            <h2>Legal References</h2>
-            
-            <div class="legal-card">
-                <div class="legal-header">
-                    <div class="legal-title">UAE Consumer Protection Law</div>
-                    <div class="legal-category">Federal Law</div>
-                </div>
-                <div class="legal-content">
-                    <p>The Federal Law No. (24) of 2008 on Consumer Protection provides guidelines for handling consumer complaints and disputes. According to Article 5, businesses must provide accurate information about products and services and resolve consumer complaints in a timely manner.</p>
-                    <p>Key provisions relevant to compensation disputes:</p>
-                    <ul>
-                        <li>Businesses must have clear complaint resolution procedures</li>
-                        <li>Consumers have the right to request compensation for defective services</li>
-                        <li>Businesses can dispute claims if they can prove the service was delivered as agreed</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="legal-card">
-                <div class="legal-header">
-                    <div class="legal-title">Platform Terms of Service</div>
-                    <div class="legal-category">Contractual</div>
-                </div>
-                <div class="legal-content">
-                    <p>Most delivery platforms include terms of service that outline their compensation policies. These typically specify:</p>
-                    <ul>
-                        <li>Circumstances under which compensation is required</li>
-                        <li>Documentation required to dispute a claim</li>
-                        <li>Timeframes for responding to claims</li>
-                        <li>Arbitration processes for unresolved disputes</li>
-                    </ul>
-                    <p>It's important to review the specific terms for each platform you use.</p>
-                </div>
-            </div>
-            
-            <div class="legal-card">
-                <div class="legal-header">
-                    <div class="legal-title">Evidence Requirements</div>
-                    <div class="legal-category">Best Practices</div>
-                </div>
-                <div class="legal-content">
-                    <p>When disputing compensation claims, strong evidence is crucial. Recommended documentation includes:</p>
-                    <ul>
-                        <li>Delivery confirmation with customer signature</li>
-                        <li>GPS tracking data showing delivery to the correct address</li>
-                        <li>Photos of the delivered order</li>
-                        <li>Communication records with the customer</li>
-                        <li>Time-stamped proof of delivery</li>
-                    </ul>
-                    <p>Maintaining a systematic approach to collecting and storing this evidence can significantly improve your success rate in dispute resolution.</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Daily Summary -->
-        <div class="daily-summary" id="daily-summary">
-            <div class="summary-header">
-                <div class="summary-title">📊 Daily Summary</div>
-                <div class="summary-date" id="summary-date">Loading...</div>
-                <button class="summary-toggle" onclick="toggleSummary()">📌</button>
-            </div>
-            
-            <div class="summary-content">
-                <div class="summary-stats">
-                    <div class="stat-box">
-                        <div class="stat-number positive">+AED 2,340</div>
-                        <div class="stat-label">Recovered Today</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-number negative">-AED 450</div>
-                        <div class="stat-label">At Risk</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-number">12</div>
-                        <div class="stat-label">Active Claims</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-number">87%</div>
-                        <div class="stat-label">Success Rate</div>
-                    </div>
-                </div>
-                
-                <div class="recent-activity">
-                    <div class="activity-title">Recent Activity</div>
-                    <div class="activity-item">
-                        <div class="activity-icon">✅</div>
-                        <div class="activity-content">
-                            <div class="activity-text">Claim #CLM-2023-7845 resolved</div>
-                            <div class="activity-time">2 hours ago</div>
-                        </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon">📧</div>
-                        <div class="activity-content">
-                            <div class="activity-text">Email sent to Noon support</div>
-                            <div class="activity-time">4 hours ago</div>
-                        </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon">🆕</div>
-                        <div class="activity-content">
-                            <div class="activity-text">New claim received from Careem</div>
-                            <div class="activity-time">6 hours ago</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Dock System -->
-        <div class="dock-container">
-            <div class="dock-item active" onclick="switchTab('dashboard'); updateDockActive(this);">
-                <div class="dock-icon">📊</div>
-                <div class="dock-label">Dashboard</div>
-            </div>
-            <div class="dock-item" onclick="switchTab('claims'); updateDockActive(this);">
-                <div class="dock-icon">📋</div>
-                <div class="dock-label">Claims</div>
-                <div class="dock-badge">3</div>
-            </div>
-            <div class="dock-item" onclick="switchTab('dispute'); updateDockActive(this);">
-                <div class="dock-icon">✍️</div>
-                <div class="dock-label">Dispute</div>
-            </div>
-            <div class="dock-item" onclick="switchTab('templates'); updateDockActive(this);">
-                <div class="dock-icon">📧</div>
-                <div class="dock-label">Templates</div>
-            </div>
-            <div class="dock-item" onclick="switchTab('ai-assistant'); updateDockActive(this);">
-                <div class="dock-icon">🤖</div>
-                <div class="dock-label">AI</div>
-            </div>
-            <div class="dock-item" onclick="switchTab('settings'); updateDockActive(this);">
-                <div class="dock-icon">⚙️</div>
-                <div class="dock-label">Settings</div>
-            </div>
-        </div>
-        
-        <script>
-            // Initialize daily summary date
-            function initializeDailySummary() {
-                const dateElement = document.getElementById('summary-date');
-                const today = new Date();
-                const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-                dateElement.textContent = today.toLocaleDateString('en-US', options);
-            }
-            
-            // Toggle daily summary
-            function toggleSummary() {
-                const summary = document.getElementById('daily-summary');
-                summary.classList.toggle('collapsed');
-            }
-            
-            // Update dock active state
-            function updateDockActive(element) {
-                document.querySelectorAll('.dock-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-                element.classList.add('active');
-                
-                // Update tab content
-                const tabName = element.querySelector('.dock-label').textContent.toLowerCase();
-                switchTab(tabName);
-            }
-            
-            // Tab switching function
-            function switchTab(tabName) {
-                // Update tab buttons
-                document.querySelectorAll('.tab').forEach(tab => {
-                    tab.classList.remove('active');
-                });
-                
-                // Find the tab that matches the tabName
-                const tabs = document.querySelectorAll('.tab');
-                tabs.forEach(tab => {
-                    if (tab.textContent.toLowerCase() === tabName) {
-                        tab.classList.add('active');
-                    }
-                });
-                
-                // Update tab content
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.remove('active');
-                });
-                
-                const tabContent = document.getElementById(`${tabName}-tab`);
-                if (tabContent) {
-                    tabContent.classList.add('active');
-                }
-            }
-            
-            // Toggle switch
-            function toggleSwitch(element) {
-                element.classList.toggle('active');
-            }
-            
-            // AI Assistant
-            function sendMessage() {
-                const input = document.getElementById('ai-input');
-                const messagesContainer = document.getElementById('ai-messages');
-                
-                if (input.value.trim() === '') return;
-                
-                // Add user message
-                const userMessage = document.createElement('div');
-                userMessage.className = 'ai-message ai-user';
-                userMessage.textContent = input.value;
-                messagesContainer.appendChild(userMessage);
-                
-                // Clear input
-                input.value = '';
-                
-                // Simulate AI response
-                setTimeout(() => {
-                    const aiMessage = document.createElement('div');
-                    aiMessage.className = 'ai-message ai-bot';
-                    
-                    // Simple responses based on keywords
-                    const message = input.value.toLowerCase();
-                    let response = '';
-                    
-                    if (message.includes('claim') || message.includes('dispute')) {
-                        response = "To dispute a claim, you'll need to gather evidence such as delivery confirmation reports, photos of the delivered order, and customer communication. Would you like help drafting a dispute response?";
-                    } else if (message.includes('evidence')) {
-                        response = "Strong evidence is crucial for successful disputes. I recommend collecting delivery confirmation with signatures, GPS tracking data, photos of the delivered order, and any communication records with the customer.";
-                    } else if (message.includes('success rate')) {
-                        response = "Our system has an 85% success rate for disputes. The key factors are providing comprehensive evidence and responding within the deadline. Would you like tips on improving your success rate?";
-                    } else {
-                        response = "I'm here to help with your compensation disputes. You can ask about claim analysis, evidence requirements, dispute strategies, or review our legal references. What specific information do you need?";
-                    }
-                    
-                    aiMessage.textContent = response;
-                    messagesContainer.appendChild(aiMessage);
-                    
-                    // Scroll to bottom
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                }, 1000);
-                
-                // Scroll to bottom
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
-            
-            // Handle Enter key in AI input
-            document.getElementById('ai-input').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendMessage();
-                }
-            });
-            
-            // Initialize on page load
-            document.addEventListener('DOMContentLoaded', function() {
-                initializeDailySummary();
-                
-                // Simulate real-time updates
-                setInterval(() => {
-                    const badge = document.querySelector('.dock-badge');
-                    if (badge) {
-                        const activeClaimsCount = Math.floor(Math.random() * 5) + 1;
-                        badge.textContent = activeClaimsCount;
-                    }
-                }, 30000); // Update every 30 seconds
-            });
-        </script>
+      </div>
     </div>
+    <!-- Form + Reply -->
+    <div class="grid lg:grid-cols-2 gap-4 mb-6">
+      <div class="bg-white p-4 rounded shadow">
+        <h2 class="font-semibold mb-2">Dispute Details</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block small mb-1">Order ID</label>
+            <input id="orderId" class="w-full border rounded p-2" placeholder="Order ID (e.g. FF91NN...)">
+          </div>
+          <div>
+            <label class="block small mb-1">Platform</label>
+            <select id="platform" class="w-full border rounded p-2">
+              <option>Noon</option>
+              <option>Careem</option>
+              <option>Talabat</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="block small mb-1">Branch</label>
+            <input id="branchInput" class="w-full border rounded p-2" placeholder="Crispy Chicken - Al Barsha">
+          </div>
+          <div>
+            <label class="block small mb-1">Order Date</label>
+            <input id="orderDate" class="w-full border rounded p-2" placeholder="2025-09-10 21:13:37">
+          </div>
+          <div>
+            <label class="block small mb-1">Order Subtotal (AED)</label>
+            <input id="orderSubtotal" class="w-full border rounded p-2" placeholder="30.00">
+          </div>
+          <div>
+            <label class="block small mb-1">Adjustment / Compensation (AED)</label>
+            <input id="adjustmentAmount" class="w-full border rounded p-2" placeholder="-12.00">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block small mb-1">Adjustment Reason</label>
+            <input id="adjustmentReason" class="w-full border rounded p-2" placeholder="DT-auto-refund Missing item - Outlet">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block small mb-1">Issue / Short Note</label>
+            <input id="issueNote" class="w-full border rounded p-2" placeholder="Missing item / Wrong order / Spilled">
+          </div>
+          <div class="md:col-span-2 flex gap-2">
+            <button id="saveBtn" class="bg-green-600 text-white px-4 py-2 rounded flex-1">Save Dispute</button>
+            <button id="updateBtn" class="bg-yellow-500 text-white px-4 py-2 rounded flex-1">Update Selected</button>
+            <button id="clearFormBtn" class="bg-gray-200 px-4 py-2 rounded flex-1">Clear</button>
+          </div>
+        </div>
+        <div class="mt-3">
+          <label class="block small mb-1">Upload Evidence (optional)</label>
+          <input id="evidenceFile" type="file" accept="image/*,video/*" class="block">
+          <div class="small mt-1 text-gray-600">Uploaded evidence is stored in browser memory for this session only (no server).</div>
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+        <h2 class="font-semibold mb-2">Reply Generator</h2>
+        <div class="mb-2 small">Choose quick response type</div>
+        <div class="flex gap-2 mb-3">
+          <button id="btnNoEvidence" class="flex-1 bg-red-500 text-white px-3 py-2 rounded">No Evidence</button>
+          <button id="btnEvidence" class="flex-1 bg-blue-600 text-white px-3 py-2 rounded">Has Evidence</button>
+          <button id="btnDriver" class="flex-1 bg-orange-500 text-white px-3 py-2 rounded">Driver Negligence</button>
+          <button id="btnCancellation" class="flex-1 bg-purple-600 text-white px-3 py-2 rounded">Cancellation</button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block small mb-1">Arabic Reply</label>
+            <textarea id="replyAr" class="w-full border rounded p-3 h-40" placeholder="Generated Arabic reply"></textarea>
+            <div class="mt-1">
+              <button id="copyAr" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">Copy Arabic</button>
+            </div>
+          </div>
+          <div>
+            <label class="block small mb-1">English Reply</label>
+            <textarea id="replyEn" class="w-full border rounded p-3 h-40" placeholder="Generated English reply"></textarea>
+            <div class="mt-1">
+              <button id="copyEn" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">Copy English</button>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-3">
+          <button id="downloadEml" class="bg-emerald-600 text-white px-4 py-2 rounded">Download .eml</button>
+          <button id="markResolvedBtn" class="bg-green-600 text-white px-4 py-2 rounded">Mark as Resolved</button>
+        </div>
+      </div>
+    </div>
+    <!-- Records Table -->
+    <div class="bg-white p-4 rounded shadow">
+      <h2 class="font-semibold mb-2">Dispute Records</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm" id="recordsTable">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="border px-2 py-1">#</th>
+              <th class="border px-2 py-1">Platform</th>
+              <th class="border px-2 py-1">Order ID</th>
+              <th class="border px-2 py-1">Branch</th>
+              <th class="border px-2 py-1">Date</th>
+              <th class="border px-2 py-1">Adj. Amount</th>
+              <th class="border px-2 py-1">Reason</th>
+              <th class="border px-2 py-1">Evidence</th>
+              <th class="border px-2 py-1">Status</th>
+              <th class="border px-2 py-1">Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <footer class="mt-4 text-center small text-gray-600">Local session storage only • Designed for Ahmed Kenawy / Crispy Chicken</footer>
+  </div>
+
+<script>
+// Helper utilities
+function uid(){return Date.now()+Math.floor(Math.random()*1000)}
+function fmt(v){return (v||'').toString().replace(/\n/g,' ')}
+
+// Elements
+const emailText = document.getElementById('emailText');
+const parseBtn = document.getElementById('parseBtn');
+const previewBtn = document.getElementById('previewBtn');
+const clearBtn = document.getElementById('clearBtn');
+const orderIdEl = document.getElementById('orderId');
+const platformEl = document.getElementById('platform');
+const branchEl = document.getElementById('branchInput');
+const dateEl = document.getElementById('orderDate');
+const subtotalEl = document.getElementById('orderSubtotal');
+const adjEl = document.getElementById('adjustmentAmount');
+const adjReasonEl = document.getElementById('adjustmentReason');
+const issueEl = document.getElementById('issueNote');
+const evidenceFile = document.getElementById('evidenceFile');
+const saveBtn = document.getElementById('saveBtn');
+const updateBtn = document.getElementById('updateBtn');
+const clearFormBtn = document.getElementById('clearFormBtn');
+const btnNoEvidence = document.getElementById('btnNoEvidence');
+const btnEvidence = document.getElementById('btnEvidence');
+const btnDriver = document.getElementById('btnDriver');
+const btnCancellation = document.getElementById('btnCancellation');
+const replyAr = document.getElementById('replyAr');
+const replyEn = document.getElementById('replyEn');
+const copyAr = document.getElementById('copyAr');
+const copyEn = document.getElementById('copyEn');
+const downloadEml = document.getElementById('downloadEml');
+const markResolvedBtn = document.getElementById('markResolvedBtn');
+const downloadEmlAll = document.getElementById('downloadEmlAll');
+const recordsTableBody = document.querySelector('#recordsTable tbody');
+const filterBranch = document.getElementById('filterBranch');
+const filterStatus = document.getElementById('filterStatus');
+const exportBtn = document.getElementById('exportBtn');
+
+// In-memory store
+let records = [];
+let selectedId = null;
+
+// Parsing function (improved)
+function extractFields(text){
+  const out = {orderId:'', branch:'', date:'', subtotal:'', adjustment:'', adjustmentReason:'', issue:''};
+  if(!text) return out;
+  const lower = text.toLowerCase();
+  
+  // Order like FF97NN... or numeric
+  const ord = text.match(/\b([A-Z]{2}\d{3,}[A-Z0-9\-]*)\b/i) || text.match(/order\s*#?\s*(\d{3,10})/i);
+  if(ord) out.orderId = ord[1];
+  
+  // Branch / Outlet
+  const b = text.match(/branch\s*name\s*[:\-]?\s*([A-Za-z0-9 \-\u0600-\u06FF]{3,60})/i) || 
+             text.match(/outlet\s*[:\-]?\s*([A-Za-z0-9 \-\u0600-\u06FF]{3,60})/i) || 
+             text.match(/crispy chicken\s*\-\s*([A-Za-z0-9 \-]{2,40})/i);
+  if(b) out.branch = b[1].trim();
+  
+  // Date ISO or dd/mm/yyyy
+  const d = text.match(/(\d{4}-\d{2}-\d{2}(?: \d{2}:\d{2}:\d{2})?)/) || text.match(/(\d{2}\/\d{2}\/\d{4})/);
+  if(d) out.date = d[1];
+  
+  // AED amounts
+  const amt = text.match(/([AED\s]*)(-?\d{1,3}(?:,\d{3})?(?:\.\d{1,2})?)\s*(AED|aed|د\.إ|درهم)?/);
+  if(amt) out.subtotal = amt[2];
+  
+  // adjustment reason
+  const adj = text.match(/adjustment reason\s*[:\-]?\s*([A-Za-z0-9 \-\u0600-\u06FF\(\)\/]{3,80})/i) || 
+             text.match(/reason\s*[:\-]?\s*([A-Za-z0-9 \-\u0600-\u06FF]{3,80})/i);
+  if(adj) out.adjustmentReason = adj[1].trim();
+  
+  // issue keywords
+  const issueM = text.match(/(missing item[s]?|missing|not delivered|wrong order|spilled|damaged|shortage|overcharged|refund|deduction|adjustment)/i);
+  if(issueM) out.issue = issueM[0];
+  
+  return out;
+}
+
+// Render helpers
+function refreshFilters(){
+  const branches = Array.from(new Set(records.map(r=>r.branch).filter(Boolean)));
+  filterBranch.innerHTML = '<option value="">-- All Branches --</option>' + branches.map(b=>`<option>${b}</option>`).join('');
+}
+
+function renderTable(){
+  recordsTableBody.innerHTML = '';
+  const filtered = records.filter(r=>{
+    if(filterBranch.value && r.branch !== filterBranch.value) return false;
+    if(filterStatus.value && r.status !== filterStatus.value) return false;
+    return true;
+  });
+  
+  filtered.forEach((r,i)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="border px-2 py-1">${i+1}</td>
+      <td class="border px-2 py-1">${r.platform||''}</td>
+      <td class="border px-2 py-1">${r.orderId||''}</td>
+      <td class="border px-2 py-1">${r.branch||''}</td>
+      <td class="border px-2 py-1">${r.orderDate||''}</td>
+      <td class="border px-2 py-1">${r.adjustmentAmount||''}</td>
+      <td class="border px-2 py-1">${r.adjustmentReason||''}</td>
+      <td class="border px-2 py-1">${r.evidence?'<span class="status-badge bg-green-100 text-green-800">Yes</span>':'<span class="status-badge bg-red-100 text-red-800">No</span>'}</td>
+      <td class="border px-2 py-1">
+        ${r.status === 'Resolved' ? '<span class="status-badge bg-green-100 text-green-800">Resolved</span>' : 
+          r.status === 'Rejected' ? '<span class="status-badge bg-red-100 text-red-800">Rejected</span>' :
+          r.status === 'Approved' ? '<span class="status-badge bg-blue-100 text-blue-800">Approved</span>' :
+          '<span class="status-badge bg-yellow-100 text-yellow-800">Pending</span>'}
+      </td>
+      <td class="border px-2 py-1 text-center">
+        <button class="px-2 py-1 rounded bg-yellow-300 mr-1" onclick="editRecord('${r.id}')">Edit</button>
+        <button class="px-2 py-1 rounded bg-gray-200 mr-1" onclick="viewRecord('${r.id}')">View</button>
+        <button class="px-2 py-1 rounded bg-red-500 text-white" onclick="deleteRecord('${r.id}')">Delete</button>
+      </td>`;
+    recordsTableBody.appendChild(tr);
+  });
+}
+
+// CRUD
+function saveRecord(){
+  const rec = {
+    id: uid(),
+    platform: platformEl.value,
+    orderId: orderIdEl.value.trim(),
+    branch: branchEl.value.trim(),
+    orderDate: dateEl.value.trim(),
+    orderSubtotal: subtotalEl.value.trim(),
+    adjustmentAmount: adjEl.value.trim(),
+    adjustmentReason: adjReasonEl.value.trim(),
+    issue: issueEl.value.trim(),
+    evidence: null,
+    status: 'Pending',
+    createdAt: new Date().toISOString()
+  };
+  
+  if(evidenceFile.files && evidenceFile.files[0]){
+    const f = evidenceFile.files[0];
+    rec.evidence = {name:f.name, size:f.size, type:f.type};
+  }
+  
+  records.unshift(rec);
+  selectedId = rec.id;
+  refreshFilters(); 
+  renderTable(); 
+  clearForm(); 
+  generateQuickReply(rec, 'noEvidence');
+}
+
+function updateRecord(){
+  if(!selectedId){ alert('Select a record to update (click Edit).'); return; }
+  const idx = records.findIndex(r=>r.id===selectedId);
+  if(idx===-1) return;
+  
+  const r = records[idx];
+  r.platform = platformEl.value;
+  r.orderId = orderIdEl.value.trim();
+  r.branch = branchEl.value.trim();
+  r.orderDate = dateEl.value.trim();
+  r.orderSubtotal = subtotalEl.value.trim();
+  r.adjustmentAmount = adjEl.value.trim();
+  r.adjustmentReason = adjReasonEl.value.trim();
+  r.issue = issueEl.value.trim();
+  
+  if(evidenceFile.files && evidenceFile.files[0]){
+    const f = evidenceFile.files[0];
+    r.evidence = {name:f.name,size:f.size,type:f.type};
+  }
+  
+  records[idx]=r;
+  refreshFilters(); 
+  renderTable(); 
+  generateQuickReply(r,'noEvidence');
+}
+
+window.editRecord = function(id){
+  const r = records.find(x=>x.id===id);
+  if(!r) return;
+  
+  selectedId = r.id;
+  platformEl.value = r.platform||'Noon';
+  orderIdEl.value = r.orderId||'';
+  branchEl.value = r.branch||'';
+  dateEl.value = r.orderDate||'';
+  subtotalEl.value = r.orderSubtotal||'';
+  adjEl.value = r.adjustmentAmount||'';
+  adjReasonEl.value = r.adjustmentReason||'';
+  issueEl.value = r.issue||'';
+  
+  alert('Record loaded into form. Make edits and press Update Selected.');
+}
+
+window.viewRecord = function(id){
+  const r = records.find(x=>x.id===id);
+  if(!r) return;
+  
+  const txt = `Order ID: ${r.orderId}\nPlatform: ${r.platform}\nBranch: ${r.branch}\nDate: ${r.orderDate}\nAdjustment: ${r.adjustmentAmount}\nReason: ${r.adjustmentReason}\nStatus: ${r.status}\nEvidence: ${r.evidence? r.evidence.name : 'No'}`;
+  alert(txt);
+}
+
+window.deleteRecord = function(id){
+  if(!confirm('Delete this record?')) return;
+  records = records.filter(r=>r.id!==id);
+  renderTable(); 
+  refreshFilters();
+}
+
+// Reply generator
+function generateQuickReply(rec, type){
+  if(!rec) return;
+  const platform = rec.platform || '';
+  const orderId = rec.orderId || '';
+  const branch = rec.branch || '';
+  const adjustmentAmount = rec.adjustmentAmount || '';
+  const adjustmentReason = rec.adjustmentReason || rec.issue || '';
+
+  let ar = '';
+  let en = '';
+
+  if (type === 'evidence') {
+    en = `Hello,\n\nRegarding Order ${orderId} - ${branch}, we note an adjustment of AED ${adjustmentAmount} for "${adjustmentReason}". We have conclusive evidence (packaging and delivery video) proving the order was prepared and handed over correctly. Please reverse the adjustment immediately as the claim is not supported.\n\nBest regards,\nCrispy Chicken Customer Service`;
+    ar = `السادة المحترمين في ${platform}،\nبخصوص الطلب رقم ${orderId} - فرع ${branch}، نلاحظ وجود خصم بقيمة ${adjustmentAmount} درهم إماراتي لسبب "${adjustmentReason}".\nلدينا أدلة قاطعة (فيديو التغليف والتسليم) تثبت أن الطلب تم تجهيزه وتسليمه بشكل صحيح. نرجو إلغاء الخصم فورًا لأن الادعاء غير مدعوم.\nمع تحيات،\nفريق خدمة العملاء - Crispy Chicken\nهاتف التوصيل: 600-527-488`;
+  } else if (type === 'driver') {
+    en = `Hello,\n\nRegarding Order ${orderId} - ${branch}, we note an adjustment of AED ${adjustmentAmount} for "${adjustmentReason}". The order was prepared correctly and handed to the driver in full. Any damage, spillage or missing items that occurred after handover are the driver's responsibility. Please attribute this deduction to delivery handling rather than the restaurant.\n\nBest regards,\nCrispy Chicken Customer Service`;
+    ar = `السادة المحترمين في ${platform}،\nبخصوص الطلب رقم ${orderId} - فرع ${branch}، نلاحظ وجود خصم بقيمة ${adjustmentAmount} درهم إماراتي لسبب "${adjustmentReason}".\nتم تجهيز الطلب بشكل صحيح وتسليمه للسائق بالكامل. أي ضرر أو تسرب أو فقدان حدث بعد التسليم هو مسؤولية السائق.\nنرجو إرجاع هذا الخصم إلى التعامل مع التوصيل بدلاً من المطعم.\nمع تحيات،\nفريق خدمة العملاء - Crispy Chicken\nهاتف التوصيل: 600-527-488`;
+  } else if (type === 'cancellation') {
+    en = `Dear ${platform} Team,\n\nWe would like to inform you that the dispute regarding Order ${orderId} - ${branch} has been resolved. We kindly request to cancel the applied deduction of ${adjustmentAmount} AED, as the dispute has been resolved in agreement with the customer.\n\nThank you for your cooperation,\nCrispy Chicken Customer Service\nDelivery Hotline: 600-527-488`;
+    ar = `السادة المحترمين في ${platform}،\nنود إعلامكم بأنه تم حل النزاع بخصوص الطلب رقم ${orderId} - فرع ${branch}.\nنطلب منكم إلغاء الخصم المطبق بقيمة ${adjustmentAmount} درهم إماراتي، حيث أن النزاع قد تم حله بالاتفاق مع العميل.\nنشكركم على تعاونكم،\nفريق خدمة العملاء - Crispy Chicken\nهاتف التوصيل: 600-527-488`;
+  } else {
+    en = `Hello,\n\nRegarding Order ${orderId} - ${branch}, we note an adjustment of AED ${adjustmentAmount} for "${adjustmentReason}". The customer has not provided sufficient photographic or video evidence to support the claim. According to platform policy, clear evidence is required to validate such deductions. Please reverse the adjustment until valid proof is supplied.\n\nBest regards,\nCrispy Chicken Customer Service`;
+    ar = `السادة المحترمين في ${platform}،\nبخصوص الطلب رقم ${orderId} - فرع ${branch}، نلاحظ وجود خصم بقيمة ${adjustmentAmount} درهم إماراتي لسبب "${adjustmentReason}".\nالعميل لم يقدم أدلة كافية (صور أو فيديو) لدعم ادعاءاته. وفقًا لسياسة المنصة، يتطلب إثباتًا واضحًا للتحقق من مثل هذه الخصومات.\nنرجو إلغاء الخصم حتى يتم تقديم إثبات صالح.\nمع تحيات،\nفريق خدمة العملاء - Crispy Chicken\nهاتف التوصيل: 600-527-488`;
+  }
+
+  replyAr.value = ar;
+  replyEn.value = en;
+}
+
+// Download .eml (simple representation)
+function emlFor(rec, body){
+  const subject = `Dispute: Order ${rec.orderId} — ${rec.adjustmentAmount}`;
+  const from = 'KENAWE@CRISPYCHICKEN.REST';
+  const to = 'partner@example.com';
+  const e = `From: ${from}\nTo: ${to}\nSubject: ${subject}\nContent-Type: text/plain; charset=utf-8\n\n${body}`;
+  return e;
+}
+
+function downloadEmlFor(rec){
+  const body = replyEn.value || '';
+  const content = emlFor(rec, body);
+  const blob = new Blob([content], {type:'message/rfc822'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `dispute_${rec.orderId || rec.id}.eml`;
+  a.click();
+}
+
+// Batch .eml
+function downloadEmlAllFunc(){
+  if(records.length===0){ alert('No records'); return; }
+  records.forEach(rec=>{
+    const b = emlFor(rec, `Please review dispute for order ${rec.orderId}`);
+    const blob = new Blob([b], {type:'message/rfc822'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `dispute_${rec.orderId || rec.id}.eml`;
+    a.click();
+  });
+}
+
+// Export CSV
+function exportCsv(){
+  if(records.length===0){ alert('No records to export'); return; }
+  
+  const headers = ['Order ID','Platform','Branch','Date','Subtotal','Adj Amount','Reason','Evidence','Status','CreatedAt'];
+  const rows = records.map(r=>[
+    r.orderId||'', 
+    r.platform||'', 
+    r.branch||'', 
+    r.orderDate||'', 
+    r.orderSubtotal||'', 
+    r.adjustmentAmount||'', 
+    (r.adjustmentReason||r.issue||''), 
+    (r.evidence? r.evidence.name:''), 
+    r.status||'', 
+    r.createdAt||''
+  ]);
+  
+  const csv = [headers.join(','), ...rows.map(row=>row.map(cell=>`"${(cell||'').toString().replace(/"/g,'""')}"`).join(','))].join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'crisp_disputes.csv';
+  a.click();
+}
+
+// Mark as resolved
+function markAsResolved() {
+  if (!selectedId) {
+    alert('Please select a dispute record first');
+    return;
+  }
+  
+  const record = records.find(r => r.id === selectedId);
+  if (!record) return;
+  
+  // Update status to Resolved
+  record.status = 'Resolved';
+  renderTable();
+  
+  // Generate cancellation template
+  generateQuickReply(record, 'cancellation');
+  
+  alert(`Dispute for Order ${record.orderId} has been marked as Resolved. Cancellation template generated.`);
+}
+
+// UI events
+parseBtn.addEventListener('click', ()=>{
+  const txt = emailText.value.trim();
+  if(!txt){ alert('Paste email text first'); return; }
+  
+  const f = extractFields(txt);
+  orderIdEl.value = f.orderId || '';
+  branchEl.value = f.branch || '';
+  dateEl.value = f.date || '';
+  subtotalEl.value = f.subtotal || '';
+  adjEl.value = f.adjustment || '';
+  adjReasonEl.value = f.adjustmentReason || '';
+  issueEl.value = f.issue || '';
+  
+  saveRecord();
+  emailText.value = '';
+});
+
+previewBtn.addEventListener('click', ()=>{
+  const txt = emailText.value.trim();
+  if(!txt){ alert('Paste email text first'); return; }
+  const f = extractFields(txt);
+  alert(JSON.stringify(f,null,2));
+});
+
+clearBtn.addEventListener('click', ()=> emailText.value='');
+saveBtn.addEventListener('click', ()=> saveRecord());
+updateBtn.addEventListener('click', ()=> updateRecord());
+clearFormBtn.addEventListener('click', ()=> clearForm());
+
+btnNoEvidence.addEventListener('click', ()=>{
+  const rec = records.find(r=>r.id===selectedId) || records[0];
+  if(!rec){ alert('Select or save a record first'); return; }
+  generateQuickReply(rec,'noEvidence');
+});
+
+btnEvidence.addEventListener('click', ()=>{
+  const rec = records.find(r=>r.id===selectedId) || records[0];
+  if(!rec){ alert('Select or save a record first'); return; }
+  generateQuickReply(rec,'evidence');
+});
+
+btnDriver.addEventListener('click', ()=>{
+  const rec = records.find(r=>r.id===selectedId) || records[0];
+  if(!rec){ alert('Select or save a record first'); return; }
+  generateQuickReply(rec,'driver');
+});
+
+btnCancellation.addEventListener('click', ()=>{
+  const rec = records.find(r=>r.id===selectedId) || records[0];
+  if(!rec){ alert('Select or save a record first'); return; }
+  generateQuickReply(rec,'cancellation');
+});
+
+copyAr.addEventListener('click', ()=>{
+  replyAr.select();
+  document.execCommand('copy');
+  alert('Arabic reply copied');
+});
+
+copyEn.addEventListener('click', ()=>{
+  replyEn.select();
+  document.execCommand('copy');
+  alert('English reply copied');
+});
+
+downloadEml.addEventListener('click', ()=>{
+  const rec = records.find(r=>r.id===selectedId) || records[0];
+  if(!rec){ alert('Select or save a record first'); return; }
+  downloadEmlFor(rec);
+});
+
+markResolvedBtn.addEventListener('click', markAsResolved);
+
+downloadEmlAll.addEventListener('click', ()=> downloadEmlAllFunc());
+exportBtn.addEventListener('click', ()=> exportCsv());
+filterBranch.addEventListener('change', ()=> renderTable());
+filterStatus.addEventListener('change', ()=> renderTable());
+
+function clearForm(){
+  selectedId = null;
+  platformEl.value = 'Noon';
+  orderIdEl.value = '';
+  branchEl.value = '';
+  dateEl.value = '';
+  subtotalEl.value = '';
+  adjEl.value = '';
+  adjReasonEl.value = '';
+  issueEl.value = '';
+  evidenceFile.value = '';
+}
+
+// Init with a sample record for convenience
+(function initSample(){
+  const s = {
+    id: uid(), 
+    platform: 'Noon', 
+    orderId: 'FF9ANN275917YZA', 
+    branch: 'Crispy Chicken - Al Barsha', 
+    orderDate:'2025-09-10 21:13:37', 
+    orderSubtotal:'30.00', 
+    adjustmentAmount:'-12.00', 
+    adjustmentReason:'DT-auto-refund Missing item - Outlet', 
+    issue:'Missing item', 
+    evidence:null, 
+    status:'Pending', 
+    createdAt:new Date().toISOString()
+  };
+  records.push(s);
+  refreshFilters(); 
+  renderTable();
+})();
+</script>
 </body>
 </html>
