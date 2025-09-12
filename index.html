@@ -1,592 +1,1386 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dispute Management System — Crispy Chicken</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    .small {font-size:13px;color:#6b7280}
-    .status-badge{padding:4px 8px;border-radius:999px;font-weight:600;font-size:12px}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dispute Email Management Screen - Crispy Chicken</title>
+<style>
+  body{font-family:Arial,Helvetica,sans-serif;direction:ltr;padding:18px;background:#f7f7f7}
+  h1{margin-top:0}
+  textarea{width:100%;height:160px;padding:10px;font-size:14px}
+  input, button, select {font-size:14px;padding:8px;margin:6px 0}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .col{flex:1;min-width:200px}
+  table{width:100%;border-collapse:collapse;margin-top:12px;background:#fff}
+  th,td{border:1px solid #ddd;padding:8px;text-align:center}
+  th{background:#f0f0f0}
+  .controls{margin-top:8px}
+  .small{font-size:13px;color:#555}
+  .btn{cursor:pointer}
+  .copy-ok{color:green;font-weight:600}
+  .reasons-section {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  .reasons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .reason-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    background: white;
+    border-radius: 4px;
+    border: 1px solid #eee;
+  }
+  .reason-item input {
+    margin-right: 8px;
+  }
+  .reason-text {
+    flex: 1;
+  }
+  .response-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+  }
+  .response-btn {
+    padding: 8px 15px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+  }
+  .response-btn:hover {
+    background: #45a049;
+  }
+  .response-btn.evidence {
+    background: #2196F3;
+  }
+  .response-btn.evidence:hover {
+    background: #0b7dda;
+  }
+  .response-btn.no-evidence {
+    background: #f44336;
+  }
+  .response-btn.no-evidence:hover {
+    background: #d32f2f;
+  }
+  .response-btn.driver {
+    background: #FF9800;
+  }
+  .response-btn.driver:hover {
+    background: #e68900;
+  }
+  .dispute-table {
+    margin-top: 20px;
+  }
+  .action-btn {
+    padding: 4px 8px;
+    margin: 0 2px;
+    background: #e0e0e0;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .action-btn:hover {
+    background: #d0d0d0;
+  }
+  .status-badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  .status-pending {
+    background: #fff3cd;
+    color: #856404;
+  }
+  .status-approved {
+    background: #d4edda;
+    color: #155724;
+  }
+  .status-rejected {
+    background: #f8d7da;
+    color: #721c24;
+  }
+  .evidence-badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  .evidence-available {
+    background: #d4edda;
+    color: #155724;
+  }
+  .evidence-none {
+    background: #f8d7da;
+    color: #721c24;
+  }
+  .dispute-form {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  .form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  .form-group input, .form-group select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  .table-container {
+    overflow-x: auto;
+  }
+  .highlight-row {
+    background-color: #fffde7 !important;
+  }
+  .search-box {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+  }
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px;
+    background: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+    display: none;
+  }
+  .notification.error {
+    background: #f44336;
+  }
+  .notification.warning {
+    background: #FF9800;
+  }
+  .stats-container {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .stat-card {
+    background: white;
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    flex: 1;
+    min-width: 150px;
+    text-align: center;
+  }
+  .stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  .stat-label {
+    font-size: 14px;
+    color: #666;
+  }
+  .filter-section {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  .filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+  }
+  .missing-field {
+    background-color: #fff8e1 !important;
+    border: 1px solid #ffc107 !important;
+  }
+  .required-indicator {
+    color: #f44336;
+    margin-right: 3px;
+  }
+</style>
 </head>
-<body class="bg-gray-50 min-h-screen text-gray-800">
-  <div class="container mx-auto p-6">
-    <header class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold">Dispute Management — Crispy Chicken</h1>
-      <div class="text-right small">
-        <div>Call Center Manager: Ahmed Kenawy</div>
-        <div>Delivery Hotline: 600-527-488</div>
-      </div>
-    </header>
-    <!-- Controls -->
-    <div class="grid md:grid-cols-3 gap-4 mb-6">
-      <div class="md:col-span-2 bg-white p-4 rounded shadow">
-        <label class="block font-semibold mb-2">Paste full platform email / dispute text</label>
-        <textarea id="emailText" class="w-full border rounded p-3 h-40" placeholder="Paste Noon / Careem / Talabat email here..."></textarea>
-        <div class="mt-3 flex gap-2">
-          <button id="parseBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Extract & Add</button>
-          <button id="previewBtn" class="bg-gray-200 px-4 py-2 rounded">Preview Extract</button>
-          <button id="clearBtn" class="bg-gray-300 px-4 py-2 rounded">Clear</button>
-        </div>
-        <p class="small mt-2">Supports detection of Order IDs (FF.../numeric), Branch, Date, AED amounts, Reference and reason keywords. Edit fields if needed before saving.</p>
-      </div>
-      <div class="bg-white p-4 rounded shadow">
-        <label class="block font-semibold mb-2">Quick Filters / Actions</label>
-        <div class="flex flex-col gap-2">
-          <select id="filterBranch" class="border rounded p-2">
-            <option value="">-- All Branches --</option>
-          </select>
-          <select id="filterStatus" class="border rounded p-2">
-            <option value="">-- All Statuses --</option>
-            <option>Pending</option>
-            <option>Rejected</option>
-            <option>Approved</option>
-            <option>Resolved</option>
-          </select>
-          <div class="flex gap-2 mt-2">
-            <button id="exportBtn" class="flex-1 bg-indigo-600 text-white px-3 py-2 rounded">Export CSV</button>
-            <button id="downloadEmlAll" class="flex-1 bg-emerald-600 text-white px-3 py-2 rounded">Download .eml (All)</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Form + Reply -->
-    <div class="grid lg:grid-cols-2 gap-4 mb-6">
-      <div class="bg-white p-4 rounded shadow">
-        <h2 class="font-semibold mb-2">Dispute Details</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div>
-            <label class="block small mb-1">Order ID</label>
-            <input id="orderId" class="w-full border rounded p-2" placeholder="Order ID (e.g. FF91NN...)">
-          </div>
-          <div>
-            <label class="block small mb-1">Platform</label>
-            <select id="platform" class="w-full border rounded p-2">
-              <option>Noon</option>
-              <option>Careem</option>
-              <option>Talabat</option>
-              <option>Other</option>
-            </select>
-          </div>
-          <div>
-            <label class="block small mb-1">Branch</label>
-            <input id="branchInput" class="w-full border rounded p-2" placeholder="Crispy Chicken - Al Barsha">
-          </div>
-          <div>
-            <label class="block small mb-1">Order Date</label>
-            <input id="orderDate" class="w-full border rounded p-2" placeholder="2025-09-10 21:13:37">
-          </div>
-          <div>
-            <label class="block small mb-1">Order Subtotal (AED)</label>
-            <input id="orderSubtotal" class="w-full border rounded p-2" placeholder="30.00">
-          </div>
-          <div>
-            <label class="block small mb-1">Adjustment / Compensation (AED)</label>
-            <input id="adjustmentAmount" class="w-full border rounded p-2" placeholder="-12.00">
-          </div>
-          <div class="md:col-span-2">
-            <label class="block small mb-1">Adjustment Reason</label>
-            <input id="adjustmentReason" class="w-full border rounded p-2" placeholder="DT-auto-refund Missing item - Outlet">
-          </div>
-          <div class="md:col-span-2">
-            <label class="block small mb-1">Issue / Short Note</label>
-            <input id="issueNote" class="w-full border rounded p-2" placeholder="Missing item / Wrong order / Spilled">
-          </div>
-          <div class="md:col-span-2 flex gap-2">
-            <button id="saveBtn" class="bg-green-600 text-white px-4 py-2 rounded flex-1">Save Dispute</button>
-            <button id="updateBtn" class="bg-yellow-500 text-white px-4 py-2 rounded flex-1">Update Selected</button>
-            <button id="clearFormBtn" class="bg-gray-200 px-4 py-2 rounded flex-1">Clear</button>
-          </div>
-        </div>
-        <div class="mt-3">
-          <label class="block small mb-1">Upload Evidence (optional)</label>
-          <input id="evidenceFile" type="file" accept="image/*,video/*" class="block">
-          <div class="small mt-1 text-gray-600">Uploaded evidence is stored in browser memory for this session only (no server).</div>
-        </div>
-      </div>
-      <div class="bg-white p-4 rounded shadow">
-        <h2 class="font-semibold mb-2">Reply Generator</h2>
-        <div class="mb-2 small">Choose quick response type</div>
-        <div class="flex gap-2 mb-3">
-          <button id="btnNoEvidence" class="flex-1 bg-red-500 text-white px-3 py-2 rounded">No Evidence</button>
-          <button id="btnEvidence" class="flex-1 bg-blue-600 text-white px-3 py-2 rounded">Has Evidence</button>
-          <button id="btnDriver" class="flex-1 bg-orange-500 text-white px-3 py-2 rounded">Driver Negligence</button>
-          <button id="btnCancellation" class="flex-1 bg-purple-600 text-white px-3 py-2 rounded">Cancellation</button>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div>
-            <label class="block small mb-1">Arabic Reply</label>
-            <textarea id="replyAr" class="w-full border rounded p-3 h-40" placeholder="Generated Arabic reply"></textarea>
-            <div class="mt-1">
-              <button id="copyAr" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">Copy Arabic</button>
-            </div>
-          </div>
-          <div>
-            <label class="block small mb-1">English Reply</label>
-            <textarea id="replyEn" class="w-full border rounded p-3 h-40" placeholder="Generated English reply"></textarea>
-            <div class="mt-1">
-              <button id="copyEn" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">Copy English</button>
-            </div>
-          </div>
-        </div>
-        <div class="flex gap-2 mt-3">
-          <button id="downloadEml" class="bg-emerald-600 text-white px-4 py-2 rounded">Download .eml</button>
-          <button id="markResolvedBtn" class="bg-green-600 text-white px-4 py-2 rounded">Mark as Resolved</button>
-        </div>
-      </div>
-    </div>
-    <!-- Records Table -->
-    <div class="bg-white p-4 rounded shadow">
-      <h2 class="font-semibold mb-2">Dispute Records</h2>
-      <div class="overflow-x-auto">
-        <table class="min-w-full text-sm" id="recordsTable">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="border px-2 py-1">#</th>
-              <th class="border px-2 py-1">Platform</th>
-              <th class="border px-2 py-1">Order ID</th>
-              <th class="border px-2 py-1">Branch</th>
-              <th class="border px-2 py-1">Date</th>
-              <th class="border px-2 py-1">Adj. Amount</th>
-              <th class="border px-2 py-1">Reason</th>
-              <th class="border px-2 py-1">Evidence</th>
-              <th class="border px-2 py-1">Status</th>
-              <th class="border px-2 py-1">Actions</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-    <footer class="mt-4 text-center small text-gray-600">Local session storage only • Designed for Ahmed Kenawy / Crispy Chicken</footer>
+<body>
+<h1>Dispute Email Management Template — Crispy Chicken</h1>
+<p class="small">Paste the dispute email in the box below, then click "Extract & Add". The record will appear in the table and can be downloaded as CSV. An Arabic and English apology draft reply is automatically generated.</p>
+
+<div class="stats-container">
+  <div class="stat-card">
+    <div class="stat-value" id="totalDisputes">0</div>
+    <div class="stat-label">Total Disputes</div>
   </div>
+  <div class="stat-card">
+    <div class="stat-value" id="pendingDisputes">0</div>
+    <div class="stat-label">Pending</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="approvedDisputes">0</div>
+    <div class="stat-label">Approved</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="rejectedDisputes">0</div>
+    <div class="stat-label">Rejected</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="totalRefunded">0</div>
+    <div class="stat-label">Total Refunded</div>
+  </div>
+</div>
+
+<div class="filter-section">
+  <h3>Filter Disputes</h3>
+  <div class="filter-grid">
+    <div class="form-group">
+      <label for="filterPlatform">Platform:</label>
+      <select id="filterPlatform">
+        <option value="">All</option>
+        <option value="Noon">Noon</option>
+        <option value="Careem">Careem</option>
+        <option value="Talabat">Talabat</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="filterStatus">Status:</label>
+      <select id="filterStatus">
+        <option value="">All</option>
+        <option value="Pending">Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Rejected">Rejected</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="filterEvidence">Evidence:</label>
+      <select id="filterEvidence">
+        <option value="">All</option>
+        <option value="None">No Evidence</option>
+        <option value="Available">Available</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="searchBox">Search:</label>
+      <input type="text" id="searchBox" class="search-box" placeholder="Search by Order ID, Branch, or Issue">
+    </div>
+  </div>
+</div>
+
+<label for="emailText">Email Text:</label>
+<textarea id="emailText" placeholder="Paste the complete email content from Noon / Careem ...">Dear Noon Support Team,
+I hope you are well. I am writing about Order FF9BNNCNBM02XFA(Reference: 8229, Subtotal: AED 45.00), placed at Crispy Chicken ‒ Al Barsha, Dubai on 2025-09-09 at 17:56:11.</textarea>
+<div class="row controls">
+  <div class="col">
+    <button id="parseBtn" class="btn">Extract & Add</button>
+    <button id="clearBtn" class="btn">Clear Field</button>
+  </div>
+  <div class="col">
+    <label>Platform (optional):</label>
+    <select id="platformSelect">
+      <option value="">-- Auto Detect --</option>
+      <option value="Noon">Noon</option>
+      <option value="Careem">Careem</option>
+      <option value="Talabat">Talabat</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+  <div class="col">
+    <label>Export:</label><br/>
+    <button id="downloadCsv" class="btn">Download CSV</button>
+    <button id="saveToLocal" class="btn">Save Locally</button>
+    <button id="loadFromLocal" class="btn">Load from Storage</button>
+  </div>
+</div>
+<h3>Dispute Details</h3>
+<div class="dispute-form">
+  <div class="form-grid">
+    <div class="form-group">
+      <label for="branchName">Branch name:</label>
+      <input type="text" id="branchName" placeholder="Branch name">
+    </div>
+    <div class="form-group">
+      <label for="orderDate">Order Date:</label>
+      <input type="date" id="orderDate" placeholder="Order date">
+    </div>
+    <div class="form-group">
+      <label for="orderNumber">Order Number:</label>
+      <input type="text" id="orderNumber" placeholder="Order number">
+    </div>
+    <div class="form-group">
+      <label for="orderReference">Order Reference:</label>
+      <input type="text" id="orderReference" placeholder="Order reference">
+    </div>
+    <div class="form-group">
+      <label for="orderSubtotal">Order Subtotal:</label>
+      <input type="text" id="orderSubtotal" placeholder="Subtotal">
+    </div>
+    <div class="form-group">
+      <label for="adjustmentAmount">Adjustment amount:<span class="required-indicator">*</span></label>
+      <input type="text" id="adjustmentAmount" placeholder="Compensation amount" class="missing-field">
+    </div>
+    <div class="form-group">
+      <label for="adjustmentReason">Adjustment reason:</label>
+      <input type="text" id="adjustmentReason" placeholder="Compensation reason">
+    </div>
+    <div class="form-group">
+      <label for="complaintId">Complaint ID:</label>
+      <input type="text" id="complaintId" placeholder="Complaint ID">
+    </div>
+  </div>
+</div>
+<h3>Organized Dispute Data</h3>
+<div class="table-container">
+  <table id="disputeTable" class="dispute-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Platform</th>
+        <th>Order ID</th>
+        <th>Branch</th>
+        <th>Order Date</th>
+        <th>Order Reference</th>
+        <th>Order Subtotal</th>
+        <th>Adjustment Amount</th>
+        <th>Adjustment Reason</th>
+        <th>Complaint ID</th>
+        <th>Issue</th>
+        <th>Evidence</th>
+        <th>Status</th>
+        <th>Refunded</th>
+        <th>Original Email</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+<div class="reasons-section">
+  <h3>Rejection Reasons (select one or more):</h3>
+  <div class="reasons-grid" id="reasonsGrid">
+    <div class="reason-item">
+      <input type="checkbox" id="reason1" value="noEvidence">
+      <label for="reason1" class="reason-text">Complaint without photographic evidence</label>
+    </div>
+    <div class="reason-item">
+      <input type="checkbox" id="reason2" value="driverNegligence">
+      <label for="reason2" class="reason-text">Driver negligence not restaurant responsibility</label>
+    </div>
+    <div class="reason-item">
+      <input type="checkbox" id="reason3" value="videoEvidence">
+      <label for="reason3" class="reason-text">Order delivered in full with video evidence</label>
+    </div>
+    <div class="reason-item">
+      <input type="checkbox" id="reason4" value="itemMissing">
+      <label for="reason4" class="reason-text">Item missing</label>
+    </div>
+    <div class="reason-item">
+      <input type="checkbox" id="reason5" value="spilledDrink">
+      <label for="reason5" class="reason-text">Spilled drink</label>
+    </div>
+    <div class="reason-item">
+      <input type="checkbox" id="reason6" value="wrongOrder">
+      <label for="reason6" class="reason-text">Wrong order</label>
+    </div>
+  </div>
+</div>
+<div class="response-buttons">
+  <button id="evidenceBtn" class="response-btn evidence">Reply with Evidence</button>
+  <button id="noEvidenceBtn" class="response-btn no-evidence">Reply based on No Evidence</button>
+  <button id="driverBtn" class="response-btn driver">Reply Driver Negligence</button>
+  <button id="customReplyBtn" class="response-btn">Custom Reply</button>
+</div>
+<h3>Reply Draft for Compensation Rejection with Reasons: Complaint without photo evidence, driver negligence not restaurant responsibility, order delivered in full with video evidence</h3>
+<div class="row">
+  <div class="col">
+    <label>Reply in Arabic:</label>
+    <textarea id="replyAr" style="height:120px"></textarea>
+    <div style="margin-top:6px">
+      <button id="copyAr">Copy Arabic Reply</button>
+      <span id="copiedAr" class="copy-ok" style="display:none">Copied!</span>
+    </div>
+  </div>
+  <div class="col">
+    <label>Reply in English:</label>
+    <textarea id="replyEn" style="height:120px"></textarea>
+    <div style="margin-top:6px">
+      <button id="copyEn">Copy English</button>
+      <span id="copiedEn" class="copy-ok" style="display:none">Copied!</span>
+    </div>
+  </div>
+</div>
+
+<div id="notification" class="notification"></div>
 
 <script>
-// Helper utilities
-function uid(){return Date.now()+Math.floor(Math.random()*1000)}
-function fmt(v){return (v||'').toString().replace(/\n/g,' ')}
-
-// Elements
-const emailText = document.getElementById('emailText');
-const parseBtn = document.getElementById('parseBtn');
-const previewBtn = document.getElementById('previewBtn');
-const clearBtn = document.getElementById('clearBtn');
-const orderIdEl = document.getElementById('orderId');
-const platformEl = document.getElementById('platform');
-const branchEl = document.getElementById('branchInput');
-const dateEl = document.getElementById('orderDate');
-const subtotalEl = document.getElementById('orderSubtotal');
-const adjEl = document.getElementById('adjustmentAmount');
-const adjReasonEl = document.getElementById('adjustmentReason');
-const issueEl = document.getElementById('issueNote');
-const evidenceFile = document.getElementById('evidenceFile');
-const saveBtn = document.getElementById('saveBtn');
-const updateBtn = document.getElementById('updateBtn');
-const clearFormBtn = document.getElementById('clearFormBtn');
-const btnNoEvidence = document.getElementById('btnNoEvidence');
-const btnEvidence = document.getElementById('btnEvidence');
-const btnDriver = document.getElementById('btnDriver');
-const btnCancellation = document.getElementById('btnCancellation');
-const replyAr = document.getElementById('replyAr');
-const replyEn = document.getElementById('replyEn');
-const copyAr = document.getElementById('copyAr');
-const copyEn = document.getElementById('copyEn');
-const downloadEml = document.getElementById('downloadEml');
-const markResolvedBtn = document.getElementById('markResolvedBtn');
-const downloadEmlAll = document.getElementById('downloadEmlAll');
-const recordsTableBody = document.querySelector('#recordsTable tbody');
-const filterBranch = document.getElementById('filterBranch');
-const filterStatus = document.getElementById('filterStatus');
-const exportBtn = document.getElementById('exportBtn');
-
-// In-memory store
-let records = [];
-let selectedId = null;
-
-// Parsing function (improved)
-function extractFields(text){
-  const out = {orderId:'', branch:'', date:'', subtotal:'', adjustment:'', adjustmentReason:'', issue:''};
-  if(!text) return out;
-  const lower = text.toLowerCase();
+(function(){
+  const emailText = document.getElementById('emailText');
+  const parseBtn = document.getElementById('parseBtn');
+  const disputeBody = document.querySelector('#disputeTable tbody');
+  const platformSelect = document.getElementById('platformSelect');
+  const replyAr = document.getElementById('replyAr');
+  const replyEn = document.getElementById('replyEn');
+  const reasonsGrid = document.getElementById('reasonsGrid');
+  const evidenceBtn = document.getElementById('evidenceBtn');
+  const noEvidenceBtn = document.getElementById('noEvidenceBtn');
+  const driverBtn = document.getElementById('driverBtn');
+  const customReplyBtn = document.getElementById('customReplyBtn');
+  const notification = document.getElementById('notification');
+  const searchBox = document.getElementById('searchBox');
+  const filterPlatform = document.getElementById('filterPlatform');
+  const filterStatus = document.getElementById('filterStatus');
+  const filterEvidence = document.getElementById('filterEvidence');
   
-  // Order like FF97NN... or numeric
-  const ord = text.match(/\b([A-Z]{2}\d{3,}[A-Z0-9\-]*)\b/i) || text.match(/order\s*#?\s*(\d{3,10})/i);
-  if(ord) out.orderId = ord[1];
+  // Form elements
+  const branchNameInput = document.getElementById('branchName');
+  const orderDateInput = document.getElementById('orderDate');
+  const orderNumberInput = document.getElementById('orderNumber');
+  const orderReferenceInput = document.getElementById('orderReference');
+  const orderSubtotalInput = document.getElementById('orderSubtotal');
+  const adjustmentAmountInput = document.getElementById('adjustmentAmount');
+  const adjustmentReasonInput = document.getElementById('adjustmentReason');
+  const complaintIdInput = document.getElementById('complaintId');
   
-  // Branch / Outlet
-  const b = text.match(/branch\s*name\s*[:\-]?\s*([A-Za-z0-9 \-\u0600-\u06FF]{3,60})/i) || 
-             text.match(/outlet\s*[:\-]?\s*([A-Za-z0-9 \-\u0600-\u06FF]{3,60})/i) || 
-             text.match(/crispy chicken\s*\-\s*([A-Za-z0-9 \-]{2,40})/i);
-  if(b) out.branch = b[1].trim();
+  let disputes = [];
+  let currentDispute = null;
+  let filteredDisputes = [];
   
-  // Date ISO or dd/mm/yyyy
-  const d = text.match(/(\d{4}-\d{2}-\d{2}(?: \d{2}:\d{2}:\d{2})?)/) || text.match(/(\d{2}\/\d{2}\/\d{4})/);
-  if(d) out.date = d[1];
-  
-  // AED amounts
-  const amt = text.match(/([AED\s]*)(-?\d{1,3}(?:,\d{3})?(?:\.\d{1,2})?)\s*(AED|aed|د\.إ|درهم)?/);
-  if(amt) out.subtotal = amt[2];
-  
-  // adjustment reason
-  const adj = text.match(/adjustment reason\s*[:\-]?\s*([A-Za-z0-9 \-\u0600-\u06FF\(\)\/]{3,80})/i) || 
-             text.match(/reason\s*[:\-]?\s*([A-Za-z0-9 \-\u0600-\u06FF]{3,80})/i);
-  if(adj) out.adjustmentReason = adj[1].trim();
-  
-  // issue keywords
-  const issueM = text.match(/(missing item[s]?|missing|not delivered|wrong order|spilled|damaged|shortage|overcharged|refund|deduction|adjustment)/i);
-  if(issueM) out.issue = issueM[0];
-  
-  return out;
-}
-
-// Render helpers
-function refreshFilters(){
-  const branches = Array.from(new Set(records.map(r=>r.branch).filter(Boolean)));
-  filterBranch.innerHTML = '<option value="">-- All Branches --</option>' + branches.map(b=>`<option>${b}</option>`).join('');
-}
-
-function renderTable(){
-  recordsTableBody.innerHTML = '';
-  const filtered = records.filter(r=>{
-    if(filterBranch.value && r.branch !== filterBranch.value) return false;
-    if(filterStatus.value && r.status !== filterStatus.value) return false;
-    return true;
-  });
-  
-  filtered.forEach((r,i)=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="border px-2 py-1">${i+1}</td>
-      <td class="border px-2 py-1">${r.platform||''}</td>
-      <td class="border px-2 py-1">${r.orderId||''}</td>
-      <td class="border px-2 py-1">${r.branch||''}</td>
-      <td class="border px-2 py-1">${r.orderDate||''}</td>
-      <td class="border px-2 py-1">${r.adjustmentAmount||''}</td>
-      <td class="border px-2 py-1">${r.adjustmentReason||''}</td>
-      <td class="border px-2 py-1">${r.evidence?'<span class="status-badge bg-green-100 text-green-800">Yes</span>':'<span class="status-badge bg-red-100 text-red-800">No</span>'}</td>
-      <td class="border px-2 py-1">
-        ${r.status === 'Resolved' ? '<span class="status-badge bg-green-100 text-green-800">Resolved</span>' : 
-          r.status === 'Rejected' ? '<span class="status-badge bg-red-100 text-red-800">Rejected</span>' :
-          r.status === 'Approved' ? '<span class="status-badge bg-blue-100 text-blue-800">Approved</span>' :
-          '<span class="status-badge bg-yellow-100 text-yellow-800">Pending</span>'}
-      </td>
-      <td class="border px-2 py-1 text-center">
-        <button class="px-2 py-1 rounded bg-yellow-300 mr-1" onclick="editRecord('${r.id}')">Edit</button>
-        <button class="px-2 py-1 rounded bg-gray-200 mr-1" onclick="viewRecord('${r.id}')">View</button>
-        <button class="px-2 py-1 rounded bg-red-500 text-white" onclick="deleteRecord('${r.id}')">Delete</button>
-      </td>`;
-    recordsTableBody.appendChild(tr);
-  });
-}
-
-// CRUD
-function saveRecord(){
-  const rec = {
-    id: uid(),
-    platform: platformEl.value,
-    orderId: orderIdEl.value.trim(),
-    branch: branchEl.value.trim(),
-    orderDate: dateEl.value.trim(),
-    orderSubtotal: subtotalEl.value.trim(),
-    adjustmentAmount: adjEl.value.trim(),
-    adjustmentReason: adjReasonEl.value.trim(),
-    issue: issueEl.value.trim(),
-    evidence: null,
+  // Sample dispute data
+  const sampleDispute = {
+    platform: 'Noon',
+    orderId: 'FF9ANN275917YZA',
+    branch: 'Crispy Chicken - Al Barsha',
+    orderDate: '2025-09-10',
+    orderReference: '2199',
+    orderSubtotal: '30.00',
+    adjustmentAmount: 'a',
+    adjustmentReason: 'Wrong order or item delivered - Outlet',
+    complaintId: 'COMP12345',
+    issue: 'Wrong order or item delivered',
+    evidence: 'None',
     status: 'Pending',
-    createdAt: new Date().toISOString()
+    refunded: '',
+    original: '',
+    id: Date.now()
   };
   
-  if(evidenceFile.files && evidenceFile.files[0]){
-    const f = evidenceFile.files[0];
-    rec.evidence = {name:f.name, size:f.size, type:f.type};
+  // Reasons data with Arabic and English responses
+  const reasonsData = {
+    noEvidence: {
+      ar: "الشكوى مقدمة بدون أي إثبات صوري يوضح وجود مشكلة في الطلب.",
+      en: "The complaint was submitted without any photographic evidence showing an issue with the order."
+    },
+    driverNegligence: {
+      ar: "أي إهمال من جانب السائق أثناء التوصيل لا يعتبر مسؤولية المطعم.",
+      en: "Any negligence by the driver during delivery is not the restaurant's responsibility."
+    },
+    videoEvidence: {
+      ar: "تم تسليم الطلب بالكامل للسائق مع وجود فيديو يوضح عملية التسليم كاملة.",
+      en: "The order was fully delivered to the driver with video evidence showing the complete handover process."
+    },
+    itemMissing: {
+      ar: "الطلب تم تجهيزه بالكامل وفقاً للطلب الأصلي، ولم يفقد أي صنف.",
+      en: "The order was prepared completely according to the original request, and no items were missing."
+    },
+    spilledDrink: {
+      ar: "المشروبات تم تعبئتها بإحكام وأغلقت بشكل صحيح، وأي تسرب يحدث أثناء التوصيل يعتبر مسؤولية السائق.",
+      en: "Drinks were sealed tightly and closed properly, any spillage during delivery is the driver's responsibility."
+    },
+    wrongOrder: {
+      ar: "الطلب تم تجهيزه بالضبط حسب الطلب المسجل في النظام، وأي خطأ في التسليم يرجع للسائق.",
+      en: "The order was prepared exactly as recorded in the system, any delivery error is the driver's responsibility."
+    }
+  };
+  
+  // Enhanced extraction functions
+  function extractFields(text){
+    const lower = text.toLowerCase();
+    const result = {
+      platform: '',
+      order: '',
+      branch: '',
+      date: '',
+      amount: '',
+      complaint: '',
+      issue: '',
+      original: text.trim(),
+      orderReference: '',
+      orderSubtotal: '',
+      adjustmentReason: '',
+      customerName: '',
+      customerPhone: '',
+      items: []
+    };
+    
+    // Platform
+    if(lower.includes('noon')) result.platform = 'Noon';
+    if(lower.includes('careem')) result.platform = 'Careem';
+    if(lower.includes('talabat')) result.platform = 'Talabat';
+    
+    // Order number - enhanced patterns
+    const orderPatterns = [
+      /Order\s*(Number|No|#)?\s*[:\-]?\s*([A-Z0-9\-]{5,30})/i,
+      /Order\s*Reference\s*[:\-]?\s*([0-9A-Z\-]{3,30})/i,
+      /Order\s*[:\-]\s*([0-9A-Z\-]{3,30})/i,
+      /\b([A-Z]{2}\d{4,}[A-Z0-9]*)\b/, // e.g. FF5QNNDQ...
+      /\b(order\s*#\s*\d{3,10})/i,
+      /\bRef[:\s]*([0-9A-Z\-]{3,30})\b/i,
+      /\bID[:\s]*([0-9A-Z\-]{3,30})\b/i
+    ];
+    
+    for(const p of orderPatterns){
+      const mm = text.match(p);
+      if(mm){
+        const val = mm[2] || mm[1];
+        if(val) { 
+          result.order = val.trim(); 
+          break; 
+        }
+      }
+    }
+    
+    // Branch - enhanced patterns
+    const b = text.match(/Branch\s*(name)?\s*[:\-]?\s*([A-Za-z\u0600-\u06FF0-9 \-']{2,50})/i);
+    if(b) result.branch = b[2].trim();
+    
+    const out = text.match(/Outlet\s*[:\-]?\s*([A-Za-z\u0600-\u06FF0-9 \-']{2,50})/i);
+    if(out && !result.branch) result.branch = out[1].trim();
+    
+    const loc = text.match(/Location\s*[:\-]?\s*([A-Za-z\u0600-\u06FF0-9 \-']{2,50})/i);
+    if(loc && !result.branch) result.branch = loc[1].trim();
+    
+    // New pattern for "placed at"
+    const placedAt = text.match(/placed at\s*([A-Za-z\u0600-\u06FF0-9 \-']{2,50})/i);
+    if(placedAt && !result.branch) result.branch = placedAt[1].trim();
+    
+    // Date - enhanced patterns
+    const d = text.match(/(\d{4}-\d{2}-\d{2})|(\d{2}\/\d{2}\/\d{4})|(\d{4}\/\d{2}\/\d{2})/);
+    if(d) result.date = d[0];
+    
+    // Date with time pattern
+    const dateTimeMatch = text.match(/(\d{4}-\d{2}-\d{2})\s*at\s*(\d{2}:\d{2}:\d{2})/);
+    if(dateTimeMatch) {
+      result.date = dateTimeMatch[1];
+    }
+    
+    // Amount - enhanced patterns
+    const a = text.match(/([AED]{1,3}\s*[\d,]+(?:\.\d{1,2})?)|([\d,]+(?:\.\d{1,2})?\s*(AED|Aed|aed|د.إ|درهم))/i);
+    if(a) result.amount = a[0].replace(/[:,]/g,'').trim();
+    
+    // Adjustment amount - if explicitly mentioned and valid
+    const adjAmountMatch = text.match(/Adjustment amount\s*[:\-]?\s*([AED\s]*[\d,]+(?:\.\d{1,2})?)/i);
+    if(adjAmountMatch) {
+      result.amount = adjAmountMatch[1].trim();
+    }
+    
+    // Complaint ID - enhanced patterns
+    const c = text.match(/(Complaint|Report|Complaint ID|Customer Complaint|Ticket ID)\s*[:\-]?\s*([A-Z0-9\-]{2,30})/i);
+    if(c) result.complaint = (c[2]||c[1]).trim();
+    
+    // Order Reference
+    const ref = text.match(/(Reference|Ref)\s*[:\-]?\s*([A-Z0-9\-]{3,30})/i);
+    if(ref) result.orderReference = ref[2].trim();
+    
+    // Order Subtotal
+    const sub = text.match(/(Subtotal|Total)\s*[:\-]?\s*([AED\s]*[\d,]+(?:\.\d{1,2})?)/i);
+    if(sub) result.orderSubtotal = sub[2].trim();
+    
+    // Adjustment Reason
+    const adj = text.match(/(Adjustment reason|Reason|Issue)\s*[:\-]?\s*([A-Za-z\u0600-\u06FF0-9 \-']{2,50})/i);
+    if(adj) result.adjustmentReason = adj[2].trim();
+    
+    // Customer Name
+    const name = text.match(/(Customer|Client|Name)\s*[:\-]?\s*([A-Za-z\u0600-\u06FF\s]{2,30})/i);
+    if(name) result.customerName = name[2].trim();
+    
+    // Customer Phone
+    const phone = text.match(/(Phone|Mobile|Contact)\s*[:\-]?\s*(\+?\d{10,15})/i);
+    if(phone) result.customerPhone = phone[2].trim();
+    
+    // Items - extract items
+    const itemsSection = text.match(/Items\s*[:\-]?\s*(.*?)(?=\n\n|\n[A-Z]|$)/is);
+    if(itemsSection) {
+      const itemsList = itemsSection[1].split('\n').filter(item => item.trim());
+      result.items = itemsList.map(item => item.trim());
+    }
+    
+    // Issue - enhanced patterns
+    const issueMatch = text.match(/(missing item[s]?|missing|not delivered|wrong item|cold|late|delayed|short|shortage|overcharged|refund|deduction|adjustment|compensation|damaged|stale|spoiled|burnt|incorrect|incomplete)/i);
+    if(issueMatch){
+      const im = issueMatch[0];
+      const idx = text.indexOf(im);
+      const start = Math.max(0, idx - 30);
+      const snippet = text.substring(start, idx + im.length + 30).replace(/\s+/g,' ').trim();
+      result.issue = snippet;
+    } else {
+      // fallback: first line or subject-like
+      const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(l=>l);
+      if(lines.length) result.issue = lines.slice(0,2).join(' / ');
+    }
+    
+    // A final attempt: if order not found, capture any token like REF/OrderRef numbers
+    if(!result.order){
+      const ord = text.match(/\b([0-9]{3,10})\b/);
+      if(ord) result.order = ord[1];
+    }
+    
+    return result;
   }
   
-  records.unshift(rec);
-  selectedId = rec.id;
-  refreshFilters(); 
-  renderTable(); 
-  clearForm(); 
-  generateQuickReply(rec, 'noEvidence');
-}
-
-function updateRecord(){
-  if(!selectedId){ alert('Select a record to update (click Edit).'); return; }
-  const idx = records.findIndex(r=>r.id===selectedId);
-  if(idx===-1) return;
-  
-  const r = records[idx];
-  r.platform = platformEl.value;
-  r.orderId = orderIdEl.value.trim();
-  r.branch = branchEl.value.trim();
-  r.orderDate = dateEl.value.trim();
-  r.orderSubtotal = subtotalEl.value.trim();
-  r.adjustmentAmount = adjEl.value.trim();
-  r.adjustmentReason = adjReasonEl.value.trim();
-  r.issue = issueEl.value.trim();
-  
-  if(evidenceFile.files && evidenceFile.files[0]){
-    const f = evidenceFile.files[0];
-    r.evidence = {name:f.name,size:f.size,type:f.type};
+  function populateForm(fields) {
+    branchNameInput.value = fields.branch || '';
+    orderDateInput.value = fields.date || '';
+    orderNumberInput.value = fields.order || '';
+    orderReferenceInput.value = fields.orderReference || '';
+    orderSubtotalInput.value = fields.orderSubtotal || '';
+    adjustmentAmountInput.value = fields.amount || '';
+    adjustmentReasonInput.value = fields.adjustmentReason || '';
+    complaintIdInput.value = fields.complaint || '';
+    
+    // Highlight missing fields
+    if (!fields.amount) {
+      adjustmentAmountInput.classList.add('missing-field');
+    } else {
+      adjustmentAmountInput.classList.remove('missing-field');
+    }
   }
   
-  records[idx]=r;
-  refreshFilters(); 
-  renderTable(); 
-  generateQuickReply(r,'noEvidence');
-}
-
-window.editRecord = function(id){
-  const r = records.find(x=>x.id===id);
-  if(!r) return;
-  
-  selectedId = r.id;
-  platformEl.value = r.platform||'Noon';
-  orderIdEl.value = r.orderId||'';
-  branchEl.value = r.branch||'';
-  dateEl.value = r.orderDate||'';
-  subtotalEl.value = r.orderSubtotal||'';
-  adjEl.value = r.adjustmentAmount||'';
-  adjReasonEl.value = r.adjustmentReason||'';
-  issueEl.value = r.issue||'';
-  
-  alert('Record loaded into form. Make edits and press Update Selected.');
-}
-
-window.viewRecord = function(id){
-  const r = records.find(x=>x.id===id);
-  if(!r) return;
-  
-  const txt = `Order ID: ${r.orderId}\nPlatform: ${r.platform}\nBranch: ${r.branch}\nDate: ${r.orderDate}\nAdjustment: ${r.adjustmentAmount}\nReason: ${r.adjustmentReason}\nStatus: ${r.status}\nEvidence: ${r.evidence? r.evidence.name : 'No'}`;
-  alert(txt);
-}
-
-window.deleteRecord = function(id){
-  if(!confirm('Delete this record?')) return;
-  records = records.filter(r=>r.id!==id);
-  renderTable(); 
-  refreshFilters();
-}
-
-// Reply generator
-function generateQuickReply(rec, type){
-  if(!rec) return;
-  const platform = rec.platform || '';
-  const orderId = rec.orderId || '';
-  const branch = rec.branch || '';
-  const adjustmentAmount = rec.adjustmentAmount || '';
-  const adjustmentReason = rec.adjustmentReason || rec.issue || '';
-
-  let ar = '';
-  let en = '';
-
-  if (type === 'evidence') {
-    en = `Hello,\n\nRegarding Order ${orderId} - ${branch}, we note an adjustment of AED ${adjustmentAmount} for "${adjustmentReason}". We have conclusive evidence (packaging and delivery video) proving the order was prepared and handed over correctly. Please reverse the adjustment immediately as the claim is not supported.\n\nBest regards,\nCrispy Chicken Customer Service`;
-    ar = `السادة المحترمين في ${platform}،\nبخصوص الطلب رقم ${orderId} - فرع ${branch}، نلاحظ وجود خصم بقيمة ${adjustmentAmount} درهم إماراتي لسبب "${adjustmentReason}".\nلدينا أدلة قاطعة (فيديو التغليف والتسليم) تثبت أن الطلب تم تجهيزه وتسليمه بشكل صحيح. نرجو إلغاء الخصم فورًا لأن الادعاء غير مدعوم.\nمع تحيات،\nفريق خدمة العملاء - Crispy Chicken\nهاتف التوصيل: 600-527-488`;
-  } else if (type === 'driver') {
-    en = `Hello,\n\nRegarding Order ${orderId} - ${branch}, we note an adjustment of AED ${adjustmentAmount} for "${adjustmentReason}". The order was prepared correctly and handed to the driver in full. Any damage, spillage or missing items that occurred after handover are the driver's responsibility. Please attribute this deduction to delivery handling rather than the restaurant.\n\nBest regards,\nCrispy Chicken Customer Service`;
-    ar = `السادة المحترمين في ${platform}،\nبخصوص الطلب رقم ${orderId} - فرع ${branch}، نلاحظ وجود خصم بقيمة ${adjustmentAmount} درهم إماراتي لسبب "${adjustmentReason}".\nتم تجهيز الطلب بشكل صحيح وتسليمه للسائق بالكامل. أي ضرر أو تسرب أو فقدان حدث بعد التسليم هو مسؤولية السائق.\nنرجو إرجاع هذا الخصم إلى التعامل مع التوصيل بدلاً من المطعم.\nمع تحيات،\nفريق خدمة العملاء - Crispy Chicken\nهاتف التوصيل: 600-527-488`;
-  } else if (type === 'cancellation') {
-    en = `Dear ${platform} Team,\n\nWe would like to inform you that the dispute regarding Order ${orderId} - ${branch} has been resolved. We kindly request to cancel the applied deduction of ${adjustmentAmount} AED, as the dispute has been resolved in agreement with the customer.\n\nThank you for your cooperation,\nCrispy Chicken Customer Service\nDelivery Hotline: 600-527-488`;
-    ar = `السادة المحترمين في ${platform}،\nنود إعلامكم بأنه تم حل النزاع بخصوص الطلب رقم ${orderId} - فرع ${branch}.\nنطلب منكم إلغاء الخصم المطبق بقيمة ${adjustmentAmount} درهم إماراتي، حيث أن النزاع قد تم حله بالاتفاق مع العميل.\nنشكركم على تعاونكم،\nفريق خدمة العملاء - Crispy Chicken\nهاتف التوصيل: 600-527-488`;
-  } else {
-    en = `Hello,\n\nRegarding Order ${orderId} - ${branch}, we note an adjustment of AED ${adjustmentAmount} for "${adjustmentReason}". The customer has not provided sufficient photographic or video evidence to support the claim. According to platform policy, clear evidence is required to validate such deductions. Please reverse the adjustment until valid proof is supplied.\n\nBest regards,\nCrispy Chicken Customer Service`;
-    ar = `السادة المحترمين في ${platform}،\nبخصوص الطلب رقم ${orderId} - فرع ${branch}، نلاحظ وجود خصم بقيمة ${adjustmentAmount} درهم إماراتي لسبب "${adjustmentReason}".\nالعميل لم يقدم أدلة كافية (صور أو فيديو) لدعم ادعاءاته. وفقًا لسياسة المنصة، يتطلب إثباتًا واضحًا للتحقق من مثل هذه الخصومات.\nنرجو إلغاء الخصم حتى يتم تقديم إثبات صالح.\nمع تحيات،\nفريق خدمة العملاء - Crispy Chicken\nهاتف التوصيل: 600-527-488`;
+  function getFormData() {
+    return {
+      branch: branchNameInput.value,
+      date: orderDateInput.value,
+      order: orderNumberInput.value,
+      orderReference: orderReferenceInput.value,
+      orderSubtotal: orderSubtotalInput.value,
+      amount: adjustmentAmountInput.value,
+      adjustmentReason: adjustmentReasonInput.value,
+      complaint: complaintIdInput.value
+    };
   }
-
-  replyAr.value = ar;
-  replyEn.value = en;
-}
-
-// Download .eml (simple representation)
-function emlFor(rec, body){
-  const subject = `Dispute: Order ${rec.orderId} — ${rec.adjustmentAmount}`;
-  const from = 'KENAWE@CRISPYCHICKEN.REST';
-  const to = 'partner@example.com';
-  const e = `From: ${from}\nTo: ${to}\nSubject: ${subject}\nContent-Type: text/plain; charset=utf-8\n\n${body}`;
-  return e;
-}
-
-function downloadEmlFor(rec){
-  const body = replyEn.value || '';
-  const content = emlFor(rec, body);
-  const blob = new Blob([content], {type:'message/rfc822'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `dispute_${rec.orderId || rec.id}.eml`;
-  a.click();
-}
-
-// Batch .eml
-function downloadEmlAllFunc(){
-  if(records.length===0){ alert('No records'); return; }
-  records.forEach(rec=>{
-    const b = emlFor(rec, `Please review dispute for order ${rec.orderId}`);
-    const blob = new Blob([b], {type:'message/rfc822'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `dispute_${rec.orderId || rec.id}.eml`;
-    a.click();
+  
+  function showNotification(message, type = 'success') {
+    notification.textContent = message;
+    notification.className = 'notification';
+    if (type === 'error') notification.classList.add('error');
+    if (type === 'warning') notification.classList.add('warning');
+    notification.style.display = 'block';
+    
+    setTimeout(() => {
+      notification.style.display = 'none';
+    }, 3000);
+  }
+  
+  function validateForm() {
+    if (!orderNumberInput.value.trim()) {
+      showNotification('Order number is required', 'error');
+      return false;
+    }
+    if (!branchNameInput.value.trim()) {
+      showNotification('Branch name is required', 'error');
+      return false;
+    }
+    if (!adjustmentAmountInput.value.trim()) {
+      showNotification('Compensation amount is required', 'error');
+      adjustmentAmountInput.classList.add('missing-field');
+      adjustmentAmountInput.focus();
+      return false;
+    }
+    return true;
+  }
+  
+  function addEntry(fields){
+    // Get form data
+    const formData = getFormData();
+    
+    // Validate form
+    if (!validateForm()) return;
+    
+    // Create dispute record
+    const dispute = {
+      platform: fields.platform || '',
+      orderId: formData.order || fields.order || '',
+      branch: formData.branch || fields.branch || '',
+      orderDate: formData.date || fields.date || '',
+      orderReference: formData.orderReference || fields.orderReference || '',
+      orderSubtotal: formData.orderSubtotal || fields.orderSubtotal || '',
+      adjustmentAmount: formData.amount || fields.amount || '',
+      adjustmentReason: formData.adjustmentReason || fields.adjustmentReason || '',
+      complaintId: formData.complaint || fields.complaint || '',
+      issue: fields.issue || '',
+      evidence: 'None', // Default value
+      status: 'Pending', // Default status
+      refunded: '', // Initially empty
+      original: fields.original || '',
+      customerName: fields.customerName || '',
+      customerPhone: fields.customerPhone || '',
+      items: fields.items || [],
+      id: Date.now() // Unique ID for actions
+    };
+    
+    disputes.push(dispute);
+    currentDispute = dispute;
+    
+    // Save to localStorage
+    saveToLocalStorage();
+    
+    renderDisputeTable();
+    updateStats();
+    generateReply(fields);
+    
+    showNotification('Dispute added successfully');
+  }
+  
+  function renderDisputeTable(){
+    disputeBody.innerHTML = '';
+    
+    // Apply filters
+    filteredDisputes = disputes.filter(dispute => {
+      // Platform filter
+      if (filterPlatform.value && dispute.platform !== filterPlatform.value) {
+        return false;
+      }
+      
+      // Status filter
+      if (filterStatus.value && dispute.status !== filterStatus.value) {
+        return false;
+      }
+      
+      // Evidence filter
+      if (filterEvidence.value && dispute.evidence !== filterEvidence.value) {
+        return false;
+      }
+      
+      // Search filter
+      if (searchBox.value.trim()) {
+        const searchTerm = searchBox.value.toLowerCase();
+        const searchableText = [
+          dispute.orderId,
+          dispute.branch,
+          dispute.issue,
+          dispute.adjustmentReason,
+          dispute.complaintId
+        ].join(' ').toLowerCase();
+        
+        if (!searchableText.includes(searchTerm)) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
+    
+    filteredDisputes.forEach((dispute, i) => {
+      const tr = document.createElement('tr');
+      
+      // Determine status badge class
+      let statusClass = 'status-pending';
+      if (dispute.status === 'Approved') statusClass = 'status-approved';
+      else if (dispute.status === 'Rejected') statusClass = 'status-rejected';
+      
+      // Determine evidence badge class
+      let evidenceClass = 'evidence-none';
+      if (dispute.evidence === 'Available') evidenceClass = 'evidence-available';
+      
+      // Check if this is the sample dispute
+      if (dispute.orderId === 'FF9ANN275917YZA') {
+        tr.classList.add('highlight-row');
+      }
+      
+      tr.innerHTML = `
+        <td>${i+1}</td>
+        <td>${dispute.platform}</td>
+        <td>${dispute.orderId}</td>
+        <td>${dispute.branch}</td>
+        <td>${dispute.orderDate}</td>
+        <td>${dispute.orderReference}</td>
+        <td>${dispute.orderSubtotal}</td>
+        <td>${dispute.adjustmentAmount || '<span style="color:#f44336">Missing</span>'}</td>
+        <td style="text-align:left">${dispute.adjustmentReason}</td>
+        <td>${dispute.complaintId}</td>
+        <td style="text-align:left">${dispute.issue}</td>
+        <td><span class="evidence-badge ${evidenceClass}">${dispute.evidence}</span></td>
+        <td><span class="status-badge ${statusClass}">${dispute.status}</span></td>
+        <td>${dispute.refunded}</td>
+        <td style="text-align:left"><small>${(dispute.original||'').slice(0,100).replace(/\\n/g,' ')}${(dispute.original && dispute.original.length>100)?' ...':''}</small></td>
+        <td>
+          <button class="action-btn" onclick="viewDetails(${dispute.id})">View</button>
+          <button class="action-btn" onclick="editDispute(${dispute.id})">Edit</button>
+          <button class="action-btn" onclick="updateStatus(${dispute.id})">Status</button>
+          <button class="action-btn" onclick="deleteDispute(${dispute.id})">Delete</button>
+        </td>
+      `;
+      disputeBody.appendChild(tr);
+    });
+  }
+  
+  function updateStats() {
+    const total = disputes.length;
+    const pending = disputes.filter(d => d.status === 'Pending').length;
+    const approved = disputes.filter(d => d.status === 'Approved').length;
+    const rejected = disputes.filter(d => d.status === 'Rejected').length;
+    
+    // Calculate total refunded amount
+    let totalRefunded = 0;
+    disputes.forEach(d => {
+      if (d.refunded) {
+        const amount = parseFloat(d.refunded.replace(/[^\d.-]/g, ''));
+        if (!isNaN(amount)) {
+          totalRefunded += amount;
+        }
+      }
+    });
+    
+    document.getElementById('totalDisputes').textContent = total;
+    document.getElementById('pendingDisputes').textContent = pending;
+    document.getElementById('approvedDisputes').textContent = approved;
+    document.getElementById('rejectedDisputes').textContent = rejected;
+    document.getElementById('totalRefunded').textContent = totalRefunded.toFixed(2) + ' AED';
+  }
+  
+  function generateReply(f){
+    // Get selected reasons
+    const selectedReasons = [];
+    const checkboxes = reasonsGrid.querySelectorAll('input[type="checkbox"]:checked');
+    
+    checkboxes.forEach(checkbox => {
+      selectedReasons.push({
+        id: checkbox.value,
+        ar: reasonsData[checkbox.value].ar,
+        en: reasonsData[checkbox.value].en
+      });
+    });
+    
+    // If no reason selected, use default reasons
+    if (selectedReasons.length === 0) {
+      selectedReasons.push(
+        { id: 'noEvidence', ar: reasonsData.noEvidence.ar, en: reasonsData.noEvidence.en },
+        { id: 'driverNegligence', ar: reasonsData.driverNegligence.ar, en: reasonsData.driverNegligence.en },
+        { id: 'videoEvidence', ar: reasonsData.videoEvidence.ar, en: reasonsData.videoEvidence.en }
+      );
+    }
+    
+    // Build reasons text
+    const reasonsArText = selectedReasons.map((r, i) => `${i+1}. ${r.ar}`).join('\n');
+    const reasonsEnText = selectedReasons.map((r, i) => `${i+1}. ${r.en}`).join('\n');
+    
+    // Get form data
+    const formData = getFormData();
+    
+    // Arabic template - Updated for rejection with reasons
+    const ar = `السلام عليكم،
+نرفض طلب التعويض المقدم بخصوص${f.issue ? ' ' + f.issue : ' الشكوى'}${formData.order ? ' (رقم الطلب: ' + formData.order + ')' : ''}${formData.branch ? ' - فرع: ' + formData.branch : ''} للأسباب التالية:
+${reasonsArText}
+نطالب بإلغاء التعويض المطلوب (${formData.amount || ''}) فوراً نظراً لعدم صحة الشكوى.
+مع تحيات،
+فريق خدمة العملاء - Crispy Chicken
+هاتف التوصيل: 600-527-488`;
+    
+    // English template - Updated for rejection with reasons
+    const en = `Hello,
+We reject the compensation request regarding${f.issue ? ' ' + f.issue : ' the complaint'}${formData.order ? ' (Order No: ' + formData.order + ')' : ''}${formData.branch ? ' - Branch: ' + formData.branch : ''} for the following reasons:
+${reasonsEnText}
+We demand the immediate cancellation of the requested compensation (${formData.amount || ''}) as the complaint is invalid.
+Best regards,
+Customer Service - Crispy Chicken
+Delivery Hotline: 600-527-488`;
+    
+    replyAr.value = ar;
+    replyEn.value = en;
+  }
+  
+  // Generate response with evidence
+  function generateEvidenceResponse() {
+    if (!currentDispute) {
+      showNotification('Please add an email first', 'warning');
+      return;
+    }
+    
+    const ar = `السلام عليكم،
+نرفض طلب التعويض المقدم بخصوص${currentDispute.issue ? ' ' + currentDispute.issue : ' الشكوى'}${currentDispute.orderId ? ' (رقم الطلب: ' + currentDispute.orderId + ')' : ''}${currentDispute.branch ? ' - فرع: ' + currentDispute.branch : ''} للأسباب التالية:
+1. نحن نمتلك أدلة قاطعة تثبت أن الطلب تم تجهيزه وتسليمه بشكل صحيح وكامل.
+2. تم تصوير عملية التغليف والتسليم بالكامل، والفيديو يوضح عدم وجود أي مشكلة في الطلب.
+3. جميع الأصناف المطلوبة تم تجهيزها بدقة وفقًا لطلب العميل.
+نطالب بإلغاء التعويض المطلوب (${currentDispute.adjustmentAmount || ''}) فوراً نظراً لوجود أدلة تثبت عدم صحة الشكوى.
+مع تحيات،
+فريق خدمة العملاء - Crispy Chicken
+هاتف التوصيل: 600-527-488`;
+    
+    const en = `Hello,
+We reject the compensation request regarding${currentDispute.issue ? ' ' + currentDispute.issue : ' the complaint'}${currentDispute.orderId ? ' (Order No: ' + currentDispute.orderId + ')' : ''}${currentDispute.branch ? ' - Branch: ' + currentDispute.branch : ''} for the following reasons:
+1. We have conclusive evidence proving that the order was prepared and delivered correctly and completely.
+2. The entire packaging and delivery process was recorded, and the video clearly shows no issues with the order.
+3. All requested items were prepared accurately according to the customer's request.
+We demand the immediate cancellation of the requested compensation (${currentDispute.adjustmentAmount || ''}) as we have evidence proving the complaint is invalid.
+Best regards,
+Customer Service - Crispy Chicken
+Delivery Hotline: 600-527-488`;
+    
+    replyAr.value = ar;
+    replyEn.value = en;
+  }
+  
+  // Generate response based on lack of customer evidence
+  function generateNoEvidenceResponse() {
+    if (!currentDispute) {
+      showNotification('Please add an email first', 'warning');
+      return;
+    }
+    
+    const ar = `السلام عليكم،
+نرفض طلب التعويض المقدم بخصوص${currentDispute.issue ? ' ' + currentDispute.issue : ' الشكوى'}${currentDispute.orderId ? ' (رقم الطلب: ' + currentDispute.orderId + ')' : ''}${currentDispute.branch ? ' - فرع: ' + currentDispute.branch : ''} للأسباب التالية:
+1. العميل لم يقدم أي دليل أو إثبات يدعم ادعاءاته حول وجود مشكلة في الطلب.
+2. وفقًا لسياسة المنصة، يجب تقديم أدلة واضحة (صور أو فيديو) لإثبات وجود مشكلة في الطلب.
+3. بدون إثباتات، لا يمكن التحقق من صحة الشكوى وبالتالي يتم رفضها.
+نطالب بإلغاء التعويض المطلوب (${currentDispute.adjustmentAmount || ''}) فوراً نظراً لعدم وجود أدلة تدعم الشكوى.
+مع تحيات،
+فريق خدمة العملاء - Crispy Chicken
+هاتف التوصيل: 600-527-488`;
+    
+    const en = `Hello,
+We reject the compensation request regarding${currentDispute.issue ? ' ' + currentDispute.issue : ' the complaint'}${currentDispute.orderId ? ' (Order No: ' + currentDispute.orderId + ')' : ''}${currentDispute.branch ? ' - Branch: ' + currentDispute.branch : ''} for the following reasons:
+1. The customer did not provide any evidence or proof to support their claims about an issue with the order.
+2. According to platform policy, clear evidence (photos or videos) must be provided to prove an issue with the order.
+3. Without evidence, the validity of the complaint cannot be verified and therefore it is rejected.
+We demand the immediate cancellation of the requested compensation (${currentDispute.adjustmentAmount || ''}) as there is no evidence supporting the complaint.
+Best regards,
+Customer Service - Crispy Chicken
+Delivery Hotline: 600-527-488`;
+    
+    replyAr.value = ar;
+    replyEn.value = en;
+  }
+  
+  // Generate response for driver negligence
+  function generateDriverResponse() {
+    if (!currentDispute) {
+      showNotification('Please add an email first', 'warning');
+      return;
+    }
+    
+    const ar = `السلام عليكم،
+نرفض طلب التعويض المقدم بخصوص${currentDispute.issue ? ' ' + currentDispute.issue : ' الشكوى'}${currentDispute.orderId ? ' (رقم الطلب: ' + currentDispute.orderId + ')' : ''}${currentDispute.branch ? ' - فرع: ' + currentDispute.branch : ''} للأسباب التالية:
+1. الطلب تم تجهيزه بالكامل وبشكل صحيح في المطعم وفقًا لطلب العميل.
+2. تم تسليم الطلب للسائق بشكل كامل وسليم، وأي مشكلة حدثت بعد ذلك تعتبر مسؤولية السائق.
+3. إهمال السائق أثناء التوصيل أو سوء التعامل مع الطلب لا يعتبر مسؤولية المطعم.
+نطالب بإلغاء التعويض المطلوب (${currentDispute.adjustmentAmount || ''}) فوراً نظراً لأن المشكلة حدثت بسبب إهمال السائق وليس خطأ من المطعم.
+مع تحيات،
+فريق خدمة العملاء - Crispy Chicken
+هاتف التوصيل: 600-527-488`;
+    
+    const en = `Hello,
+We reject the compensation request regarding${currentDispute.issue ? ' ' + currentDispute.issue : ' the complaint'}${currentDispute.orderId ? ' (Order No: ' + currentDispute.orderId + ')' : ''}${currentDispute.branch ? ' - Branch: ' + currentDispute.branch : ''} for the following reasons:
+1. The order was prepared completely and correctly at the restaurant according to the customer's request.
+2. The order was handed over to the driver in full and good condition, any issues that occurred afterward are the driver's responsibility.
+3. Driver negligence during delivery or mishandling of the order is not the restaurant's responsibility.
+We demand the immediate cancellation of the requested compensation (${currentDispute.adjustmentAmount || ''}) as the issue was caused by driver negligence, not the restaurant's fault.
+Best regards,
+Customer Service - Crispy Chicken
+Delivery Hotline: 600-527-488`;
+    
+    replyAr.value = ar;
+    replyEn.value = en;
+  }
+  
+  // Generate custom response
+  function generateCustomResponse() {
+    if (!currentDispute) {
+      showNotification('Please add an email first', 'warning');
+      return;
+    }
+    
+    const customReason = prompt('Enter custom rejection reason:');
+    if (!customReason) return;
+    
+    const ar = `السلام عليكم،
+نرفض طلب التعويض المقدم بخصوص${currentDispute.issue ? ' ' + currentDispute.issue : ' الشكوى'}${currentDispute.orderId ? ' (رقم الطلب: ' + currentDispute.orderId + ')' : ''}${currentDispute.branch ? ' - فرع: ' + currentDispute.branch : ''} للسبب التالي:
+${customReason}
+نطالب بإلغاء التعويض المطلوب (${currentDispute.adjustmentAmount || ''}) فوراً.
+مع تحيات،
+فريق خدمة العملاء - Crispy Chicken
+هاتف التوصيل: 600-527-488`;
+    
+    const en = `Hello,
+We reject the compensation request regarding${currentDispute.issue ? ' ' + currentDispute.issue : ' the complaint'}${currentDispute.orderId ? ' (Order No: ' + currentDispute.orderId + ')' : ''}${currentDispute.branch ? ' - Branch: ' + currentDispute.branch : ''} for the following reason:
+${customReason}
+We demand the immediate cancellation of the requested compensation (${currentDispute.adjustmentAmount || ''}).
+Best regards,
+Customer Service - Crispy Chicken
+Delivery Hotline: 600-527-488`;
+    
+    replyAr.value = ar;
+    replyEn.value = en;
+  }
+  
+  // Local Storage Functions
+  function saveToLocalStorage() {
+    try {
+      localStorage.setItem('crispyDisputes', JSON.stringify(disputes));
+      showNotification('Data saved locally');
+    } catch (e) {
+      showNotification('Failed to save data: ' + e.message, 'error');
+    }
+  }
+  
+  function loadFromLocalStorage() {
+    try {
+      const saved = localStorage.getItem('crispyDisputes');
+      if (saved) {
+        disputes = JSON.parse(saved);
+        renderDisputeTable();
+        updateStats();
+        showNotification('Data loaded from local storage');
+      } else {
+        showNotification('No saved data found', 'warning');
+      }
+    } catch (e) {
+      showNotification('Failed to load data: ' + e.message, 'error');
+    }
+  }
+  
+  // Action functions for dispute table
+  window.viewDetails = function(id) {
+    const dispute = disputes.find(d => d.id === id);
+    if (dispute) {
+      let details = `Dispute Details:\n\n`;
+      details += `Order Number: ${dispute.orderId}\n`;
+      details += `Date: ${dispute.orderDate}\n`;
+      details += `Branch: ${dispute.branch}\n`;
+      details += `Platform: ${dispute.platform}\n`;
+      details += `Issue: ${dispute.issue}\n`;
+      details += `Compensation: ${dispute.adjustmentAmount || 'Missing'}\n`;
+      details += `Reference: ${dispute.orderReference}\n`;
+      details += `Subtotal: ${dispute.orderSubtotal}\n`;
+      details += `Compensation Reason: ${dispute.adjustmentReason}\n`;
+      details += `Complaint ID: ${dispute.complaintId}\n`;
+      details += `Evidence Status: ${dispute.evidence}\n`;
+      details += `Status: ${dispute.status}\n`;
+      details += `Refunded Amount: ${dispute.refunded}\n`;
+      
+      if (dispute.customerName) details += `Customer Name: ${dispute.customerName}\n`;
+      if (dispute.customerPhone) details += `Customer Phone: ${dispute.customerPhone}\n`;
+      if (dispute.items.length > 0) details += `Items: ${dispute.items.join(', ')}\n`;
+      
+      alert(details);
+    }
+  };
+  
+  window.editDispute = function(id) {
+    const dispute = disputes.find(d => d.id === id);
+    if (dispute) {
+      // Populate form with dispute data
+      populateForm(dispute);
+      
+      // Set as current dispute
+      currentDispute = dispute;
+      
+      // Generate reply for this dispute
+      generateReply(dispute);
+      
+      showNotification('Dispute data loaded in the form above. You can modify the data and then create a new reply.');
+    }
+  };
+  
+  window.updateStatus = function(id) {
+    const dispute = disputes.find(d => d.id === id);
+    if (dispute) {
+      const newStatus = prompt('Update dispute status (Pending/Approved/Rejected):', dispute.status);
+      if (newStatus && (newStatus === 'Pending' || newStatus === 'Approved' || newStatus === 'Rejected')) {
+        dispute.status = newStatus;
+        saveToLocalStorage();
+        renderDisputeTable();
+        updateStats();
+      }
+      
+      const newEvidence = prompt('Update evidence status (None/Available):', dispute.evidence);
+      if (newEvidence && (newEvidence === 'None' || newEvidence === 'Available')) {
+        dispute.evidence = newEvidence;
+        saveToLocalStorage();
+        renderDisputeTable();
+      }
+      
+      const refunded = prompt('Enter refunded amount (if any):', dispute.refunded);
+      if (refunded !== null) {
+        dispute.refunded = refunded;
+        saveToLocalStorage();
+        renderDisputeTable();
+        updateStats();
+      }
+    }
+  };
+  
+  window.deleteDispute = function(id) {
+    if (confirm('Are you sure you want to delete this dispute?')) {
+      disputes = disputes.filter(d => d.id !== id);
+      saveToLocalStorage();
+      renderDisputeTable();
+      updateStats();
+      
+      if (currentDispute && currentDispute.id === id) {
+        currentDispute = null;
+      }
+      
+      showNotification('Dispute deleted successfully');
+    }
+  };
+  
+  parseBtn.addEventListener('click', ()=>{
+    const txt = emailText.value.trim();
+    if(!txt){ 
+      showNotification('Please paste the email text first.', 'error');
+      return; 
+    }
+    const parsed = extractFields(txt);
+    // If user selected platform manually, override
+    if(platformSelect.value) parsed.platform = platformSelect.value;
+    
+    // Populate form with extracted data
+    populateForm(parsed);
+    
+    // Check if adjustment amount is missing
+    if (!parsed.amount) {
+      showNotification('Compensation amount is missing, please enter it manually', 'warning');
+      adjustmentAmountInput.focus();
+    }
+    
+    addEntry(parsed);
+    // clear input for next
+    emailText.value = '';
   });
-}
-
-// Export CSV
-function exportCsv(){
-  if(records.length===0){ alert('No records to export'); return; }
   
-  const headers = ['Order ID','Platform','Branch','Date','Subtotal','Adj Amount','Reason','Evidence','Status','CreatedAt'];
-  const rows = records.map(r=>[
-    r.orderId||'', 
-    r.platform||'', 
-    r.branch||'', 
-    r.orderDate||'', 
-    r.orderSubtotal||'', 
-    r.adjustmentAmount||'', 
-    (r.adjustmentReason||r.issue||''), 
-    (r.evidence? r.evidence.name:''), 
-    r.status||'', 
-    r.createdAt||''
-  ]);
+  document.getElementById('clearBtn').addEventListener('click', ()=>{ 
+    emailText.value = ''; 
+    showNotification('Field cleared');
+  });
   
-  const csv = [headers.join(','), ...rows.map(row=>row.map(cell=>`"${(cell||'').toString().replace(/"/g,'""')}"`).join(','))].join('\n');
-  const blob = new Blob([csv], {type:'text/csv'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'crisp_disputes.csv';
-  a.click();
-}
-
-// Mark as resolved
-function markAsResolved() {
-  if (!selectedId) {
-    alert('Please select a dispute record first');
-    return;
+  // CSV download
+  document.getElementById('downloadCsv').addEventListener('click', ()=>{
+    if(disputes.length===0){ 
+      showNotification('No data to download.', 'warning');
+      return; 
+    }
+    
+    // Helper function to format CSV fields
+    function formatCsvField(field) {
+      if (field === null || field === undefined) return '';
+      field = field.toString();
+      if (field.includes(',') || field.includes('\n') || field.includes('"')) {
+        return '"' + field.replace(/"/g, '""') + '"';
+      }
+      return field;
+    }
+    
+    const headers = ['#', 'Platform', 'Order ID', 'Branch', 'Order Date', 'Order Reference', 'Order Subtotal', 'Adjustment Amount', 'Adjustment Reason', 'Complaint ID', 'Issue', 'Evidence', 'Status', 'Refunded', 'Customer Name', 'Customer Phone', 'Items', 'Original Email'];
+    const formattedHeaders = headers.map(h => formatCsvField(h));
+    
+    const rows = disputes.map((dispute, i) => [
+      formatCsvField(i+1),
+      formatCsvField(dispute.platform),
+      formatCsvField(dispute.orderId),
+      formatCsvField(dispute.branch),
+      formatCsvField(dispute.orderDate),
+      formatCsvField(dispute.orderReference),
+      formatCsvField(dispute.orderSubtotal),
+      formatCsvField(dispute.adjustmentAmount),
+      formatCsvField(dispute.adjustmentReason),
+      formatCsvField(dispute.complaintId),
+      formatCsvField(dispute.issue),
+      formatCsvField(dispute.evidence),
+      formatCsvField(dispute.status),
+      formatCsvField(dispute.refunded),
+      formatCsvField(dispute.customerName),
+      formatCsvField(dispute.customerPhone),
+      formatCsvField(dispute.items.join('; ')),
+      formatCsvField((dispute.original || '').replace(/\r?\n/g, ' '))
+    ]);
+    
+    const csv = [formattedHeaders.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob(['\ufeff' + csv], {type: 'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'disputes_sheet.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    
+    showNotification('CSV file downloaded successfully');
+  });
+  
+  // Local Storage buttons
+  document.getElementById('saveToLocal').addEventListener('click', saveToLocalStorage);
+  document.getElementById('loadFromLocal').addEventListener('click', loadFromLocalStorage);
+  
+  // copy buttons
+  document.getElementById('copyAr').addEventListener('click', ()=>{
+    navigator.clipboard.writeText(replyAr.value).then(()=>{
+      const el = document.getElementById('copiedAr');
+      el.style.display = 'inline';
+      setTimeout(()=>el.style.display='none',2000);
+      showNotification('Arabic reply copied');
+    });
+  });
+  
+  document.getElementById('copyEn').addEventListener('click', ()=>{
+    navigator.clipboard.writeText(replyEn.value).then(()=>{
+      const el = document.getElementById('copiedEn');
+      el.style.display = 'inline';
+      setTimeout(()=>el.style.display='none',2000);
+      showNotification('English reply copied');
+    });
+  });
+  
+  // Allow double-click on table row to edit reply using that entry
+  disputeBody.addEventListener('dblclick', (ev)=>{
+    let tr = ev.target.closest('tr');
+    if(!tr) return;
+    const idx = parseInt(tr.children[0].textContent,10)-1;
+    if(disputes[idx]) {
+      currentDispute = disputes[idx];
+      
+      // Populate form with entry data
+      populateForm(disputes[idx]);
+      
+      generateReply(disputes[idx]);
+      showNotification('Data from this record loaded in reply drafts above. Edit the text then copy to send.');
+    }
+  });
+  
+  // Update reply when reasons are selected
+  reasonsGrid.addEventListener('change', () => {
+    if (currentDispute) {
+      generateReply(currentDispute);
+    }
+  });
+  
+  // Response buttons event listeners
+  evidenceBtn.addEventListener('click', generateEvidenceResponse);
+  noEvidenceBtn.addEventListener('click', generateNoEvidenceResponse);
+  driverBtn.addEventListener('click', generateDriverResponse);
+  customReplyBtn.addEventListener('click', generateCustomResponse);
+  
+  // Filter event listeners
+  searchBox.addEventListener('input', renderDisputeTable);
+  filterPlatform.addEventListener('change', renderDisputeTable);
+  filterStatus.addEventListener('change', renderDisputeTable);
+  filterEvidence.addEventListener('change', renderDisputeTable);
+  
+  // Form input event listeners to update current dispute
+  branchNameInput.addEventListener('input', () => {
+    if (currentDispute) {
+      currentDispute.branch = branchNameInput.value;
+    }
+  });
+  
+  orderDateInput.addEventListener('input', () => {
+    if (currentDispute) {
+      currentDispute.orderDate = orderDateInput.value;
+    }
+  });
+  
+  orderNumberInput.addEventListener('input', () => {
+    if (currentDispute) {
+      currentDispute.orderId = orderNumberInput.value;
+    }
+  });
+  
+  orderReferenceInput.addEventListener('input', () => {
+    if (currentDispute) {
+      currentDispute.orderReference = orderReferenceInput.value;
+    }
+  });
+  
+  orderSubtotalInput.addEventListener('input', () => {
+    if (currentDispute) {
+      currentDispute.orderSubtotal = orderSubtotalInput.value;
+    }
+  });
+  
+  adjustmentAmountInput.addEventListener('input', () => {
+    if (currentDispute) {
+      currentDispute.adjustmentAmount = adjustmentAmountInput.value;
+    }
+    // Remove highlight when user enters a value
+    if (adjustmentAmountInput.value.trim()) {
+      adjustmentAmountInput.classList.remove('missing-field');
+    }
+  });
+  
+  adjustmentReasonInput.addEventListener('input', () => {
+    if (currentDispute) {
+      currentDispute.adjustmentReason = adjustmentReasonInput.value;
+    }
+  });
+  
+  complaintIdInput.addEventListener('input', () => {
+    if (currentDispute) {
+      currentDispute.complaintId = complaintIdInput.value;
+    }
+  });
+  
+  // Initialize with sample data
+  function initializeSampleData() {
+    // Add sample dispute to the list
+    disputes.push(sampleDispute);
+    currentDispute = sampleDispute;
+    
+    // Populate form with sample data
+    populateForm(sampleDispute);
+    
+    // Render the table
+    renderDisputeTable();
+    updateStats();
+    
+    // Generate a default reply
+    generateReply(sampleDispute);
   }
   
-  const record = records.find(r => r.id === selectedId);
-  if (!record) return;
+  // Initialize the page with sample data
+  initializeSampleData();
   
-  // Update status to Resolved
-  record.status = 'Resolved';
-  renderTable();
-  
-  // Generate cancellation template
-  generateQuickReply(record, 'cancellation');
-  
-  alert(`Dispute for Order ${record.orderId} has been marked as Resolved. Cancellation template generated.`);
-}
-
-// UI events
-parseBtn.addEventListener('click', ()=>{
-  const txt = emailText.value.trim();
-  if(!txt){ alert('Paste email text first'); return; }
-  
-  const f = extractFields(txt);
-  orderIdEl.value = f.orderId || '';
-  branchEl.value = f.branch || '';
-  dateEl.value = f.date || '';
-  subtotalEl.value = f.subtotal || '';
-  adjEl.value = f.adjustment || '';
-  adjReasonEl.value = f.adjustmentReason || '';
-  issueEl.value = f.issue || '';
-  
-  saveRecord();
-  emailText.value = '';
-});
-
-previewBtn.addEventListener('click', ()=>{
-  const txt = emailText.value.trim();
-  if(!txt){ alert('Paste email text first'); return; }
-  const f = extractFields(txt);
-  alert(JSON.stringify(f,null,2));
-});
-
-clearBtn.addEventListener('click', ()=> emailText.value='');
-saveBtn.addEventListener('click', ()=> saveRecord());
-updateBtn.addEventListener('click', ()=> updateRecord());
-clearFormBtn.addEventListener('click', ()=> clearForm());
-
-btnNoEvidence.addEventListener('click', ()=>{
-  const rec = records.find(r=>r.id===selectedId) || records[0];
-  if(!rec){ alert('Select or save a record first'); return; }
-  generateQuickReply(rec,'noEvidence');
-});
-
-btnEvidence.addEventListener('click', ()=>{
-  const rec = records.find(r=>r.id===selectedId) || records[0];
-  if(!rec){ alert('Select or save a record first'); return; }
-  generateQuickReply(rec,'evidence');
-});
-
-btnDriver.addEventListener('click', ()=>{
-  const rec = records.find(r=>r.id===selectedId) || records[0];
-  if(!rec){ alert('Select or save a record first'); return; }
-  generateQuickReply(rec,'driver');
-});
-
-btnCancellation.addEventListener('click', ()=>{
-  const rec = records.find(r=>r.id===selectedId) || records[0];
-  if(!rec){ alert('Select or save a record first'); return; }
-  generateQuickReply(rec,'cancellation');
-});
-
-copyAr.addEventListener('click', ()=>{
-  replyAr.select();
-  document.execCommand('copy');
-  alert('Arabic reply copied');
-});
-
-copyEn.addEventListener('click', ()=>{
-  replyEn.select();
-  document.execCommand('copy');
-  alert('English reply copied');
-});
-
-downloadEml.addEventListener('click', ()=>{
-  const rec = records.find(r=>r.id===selectedId) || records[0];
-  if(!rec){ alert('Select or save a record first'); return; }
-  downloadEmlFor(rec);
-});
-
-markResolvedBtn.addEventListener('click', markAsResolved);
-
-downloadEmlAll.addEventListener('click', ()=> downloadEmlAllFunc());
-exportBtn.addEventListener('click', ()=> exportCsv());
-filterBranch.addEventListener('change', ()=> renderTable());
-filterStatus.addEventListener('change', ()=> renderTable());
-
-function clearForm(){
-  selectedId = null;
-  platformEl.value = 'Noon';
-  orderIdEl.value = '';
-  branchEl.value = '';
-  dateEl.value = '';
-  subtotalEl.value = '';
-  adjEl.value = '';
-  adjReasonEl.value = '';
-  issueEl.value = '';
-  evidenceFile.value = '';
-}
-
-// Init with a sample record for convenience
-(function initSample(){
-  const s = {
-    id: uid(), 
-    platform: 'Noon', 
-    orderId: 'FF9ANN275917YZA', 
-    branch: 'Crispy Chicken - Al Barsha', 
-    orderDate:'2025-09-10 21:13:37', 
-    orderSubtotal:'30.00', 
-    adjustmentAmount:'-12.00', 
-    adjustmentReason:'DT-auto-refund Missing item - Outlet', 
-    issue:'Missing item', 
-    evidence:null, 
-    status:'Pending', 
-    createdAt:new Date().toISOString()
-  };
-  records.push(s);
-  refreshFilters(); 
-  renderTable();
+  // Auto-parse the pre-filled email on page load
+  window.addEventListener('load', () => {
+    if (emailText.value.trim()) {
+      const parsed = extractFields(emailText.value);
+      populateForm(parsed);
+      
+      // Check if adjustment amount is missing
+      if (!parsed.amount) {
+        showNotification('Compensation amount is missing, please enter it manually', 'warning');
+        adjustmentAmountInput.focus();
+      }
+    }
+  });
 })();
 </script>
 </body>
