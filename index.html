@@ -10,6 +10,7 @@
     --success:#16a34a;
     --warning:#f59e0b;
     --danger:#dc2626;
+    --expired:#6b7280;
     --bg:#f9fafb;
     --card:#ffffff;
     --text:#1f2937;
@@ -19,22 +20,38 @@
   .container { display:grid; grid-template-columns: 2fr 1fr; gap:20px; }
   .card { background:var(--card); border-radius:12px; padding:20px; box-shadow:0 4px 8px rgba(0,0,0,0.05); }
   table { width:100%; border-collapse:collapse; margin-top:10px;}
-  th, td { padding:10px; border-bottom:1px solid #e5e7eb; text-align:left; }
+  th, td { padding:8px; border-bottom:1px solid #e5e7eb; text-align:left; }
   th { background:#f3f4f6; position:sticky; top:0; }
-  button { padding:6px 12px; border:none; border-radius:6px; cursor:pointer; font-size:14px; }
-  .btn { margin-right:5px; }
+  button { 
+    padding:4px 8px; 
+    border:none; 
+    border-radius:6px; 
+    cursor:pointer; 
+    font-size:12px;
+    transition: all 0.2s ease;
+    transform: scale(1);
+  }
+  button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  .btn { margin-right:3px; }
   .Reply { background:var(--success); color:white; }
   .Follow-up { background:var(--warning); color:white; }
   .Closed { background:var(--danger); color:white; }
+  .Expired { background:var(--expired); color:white; }
+  .Delete { background:#6b7280; color:white; }
   .stat-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:10px; margin-top:10px; }
   .stat-card { background:var(--card); padding:15px; border-radius:10px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.05);}
   .badge { padding:3px 8px; border-radius:12px; font-size:12px; }
   .badge.Reply { background:#dcfce7; color:#166534; }
   .badge.Follow-up { background:#fef9c3; color:#92400e; }
   .badge.Closed { background:#fee2e2; color:#991b1b; }
+  .badge.Expired { background:#e5e7eb; color:#4b5563; }
   .toast { position:fixed; top:20px; right:20px; background:#333; color:#fff; padding:10px 15px; border-radius:8px; opacity:0; transform:translateY(-20px); transition:all 0.3s ease; z-index:1000;}
   .toast.show { opacity:1; transform:translateY(0); }
   input, select { padding:8px; border:1px solid #d1d5db; border-radius:6px; margin-bottom:8px; width:100%; }
+  .timer { font-size:12px; color:var(--danger); font-weight:bold; }
 </style>
 </head>
 <body>
@@ -62,6 +79,12 @@
         <option value="Medium">Medium</option>
         <option value="Low">Low</option>
       </select>
+      <label>Timer Duration</label>
+      <select id="timerDuration">
+        <option value="24">24 hours</option>
+        <option value="48" selected>48 hours</option>
+        <option value="72">72 hours</option>
+      </select>
       <label>Notes</label>
       <input type="text" id="notes">
       <button onclick="addEmail()" style="background:var(--primary);color:white;">Add Email</button>
@@ -77,6 +100,7 @@
             <th>Date Sent</th>
             <th>Status</th>
             <th>Priority</th>
+            <th>Timer</th>
             <th>Notes</th>
             <th>Actions</th>
           </tr>
@@ -102,6 +126,7 @@
         <div class="stat-card"><h2 id="replyCount">0</h2><p>Reply</p></div>
         <div class="stat-card"><h2 id="followCount">0</h2><p>Follow-up</p></div>
         <div class="stat-card"><h2 id="closedCount">0</h2><p>Closed</p></div>
+        <div class="stat-card"><h2 id="expiredCount">0</h2><p>Expired</p></div>
       </div>
       <canvas id="dashboardChart" height="200"></canvas>
     </div>
@@ -115,6 +140,7 @@
 const WHATSAPP_NUMBER = "971509021993";
 let emails = JSON.parse(localStorage.getItem("emails")) || [];
 let contacts = JSON.parse(localStorage.getItem("contacts")) || [];
+let timerInterval;
 
 // ====== CONTACT FUNCTIONS ======
 function addContact(){
@@ -144,32 +170,77 @@ function addEmail(){
   const from=document.getElementById("from").value.trim();
   const dateSent=document.getElementById("dateSent").value;
   const priority=document.getElementById("priority").value;
+  const timerDuration=document.getElementById("timerDuration").value;
   const notes=document.getElementById("notes").value.trim();
   if(!subject||!from||!dateSent){ showToast("Fill Subject, From, Date","error"); return; }
-  emails.push({Subject:subject,From:from,"Date Sent":dateSent,Status:"Follow-up",Priority:priority,Notes:notes});
+  
+  // Calculate expiration time
+  const dateSentObj = new Date(dateSent);
+  const expirationTime = new Date(dateSentObj.getTime() + (timerDuration * 60 * 60 * 1000));
+  
+  emails.push({
+    Subject:subject,
+    From:from,
+    "Date Sent":dateSent,
+    Status:"Follow-up",
+    Priority:priority,
+    Notes:notes,
+    TimerDuration: timerDuration,
+    ExpirationTime: expirationTime.toISOString(),
+    Notified: false
+  });
+  
   localStorage.setItem("emails",JSON.stringify(emails));
-  renderTable(); renderDashboard();
+  renderTable(); 
+  renderDashboard();
+  
   document.getElementById("subject").value="";
   document.getElementById("from").value="";
   document.getElementById("dateSent").value="";
   document.getElementById("notes").value="";
+  
   showToast("Email added","success");
+  
+  // Start timer if not already running
+  if (!timerInterval) {
+    startTimers();
+  }
 }
 function renderTable(){
-  const tbody=document.querySelector("#emailTable tbody"); tbody.innerHTML="";
+  const tbody=document.querySelector("#emailTable tbody"); 
+  tbody.innerHTML="";
+  
   emails.forEach((email,i)=>{
     const row=document.createElement("tr");
+    
+    // Calculate remaining time
+    const expirationTime = new Date(email.ExpirationTime);
+    const now = new Date();
+    const timeDiff = expirationTime - now;
+    
+    let timerDisplay = "";
+    if (timeDiff > 0) {
+      const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+      timerDisplay = `${days}d ${hours}h ${minutes}m`;
+    } else if (email.Status !== "Expired") {
+      timerDisplay = "Expired";
+    }
+    
     row.innerHTML=`
       <td>${email.Subject}</td>
       <td>${email.From}</td>
       <td>${new Date(email['Date Sent']).toLocaleString()}</td>
       <td><span class="badge ${email.Status}">${email.Status}</span></td>
       <td>${email.Priority}</td>
+      <td class="timer">${timerDisplay}</td>
       <td>${email.Notes}</td>
       <td>
         <button class="Reply btn" onclick="updateStatus(${i},'Reply')">Reply</button>
         <button class="Follow-up btn" onclick="updateStatus(${i},'Follow-up')">Follow-up</button>
         <button class="Closed btn" onclick="updateStatus(${i},'Closed')">Closed</button>
+        <button class="Delete btn" onclick="deleteEmail(${i})">Delete</button>
       </td>`;
     tbody.appendChild(row);
   });
@@ -177,27 +248,99 @@ function renderTable(){
 function updateStatus(index,newStatus){
   emails[index].Status=newStatus;
   localStorage.setItem("emails",JSON.stringify(emails));
+  
   if(newStatus==="Follow-up"){
     const email=emails[index];
     const message=`Reminder: Email "${email.Subject}" from ${email.From} needs attention. Status: ${newStatus}`;
     window.open(`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(message)}`,"_blank");
     showToast("WhatsApp reminder sent","info");
   }
-  renderTable(); renderDashboard();
+  
+  renderTable(); 
+  renderDashboard();
+}
+function deleteEmail(index){
+  emails.splice(index, 1);
+  localStorage.setItem("emails",JSON.stringify(emails));
+  renderTable();
+  renderDashboard();
+  showToast("Email deleted","success");
+}
+
+// ====== TIMER FUNCTIONS ======
+function startTimers() {
+  timerInterval = setInterval(() => {
+    let needsUpdate = false;
+    
+    emails.forEach((email, index) => {
+      if (email.Status === "Expired") return; // Skip if already expired
+      
+      const expirationTime = new Date(email.ExpirationTime);
+      const now = new Date();
+      
+      if (now >= expirationTime && !email.Notified) {
+        // Mark as expired
+        emails[index].Status = "Expired";
+        emails[index].Notified = true;
+        needsUpdate = true;
+        
+        // Send WhatsApp notification
+        sendExpiredNotification(email);
+      }
+    });
+    
+    if (needsUpdate) {
+      localStorage.setItem("emails", JSON.stringify(emails));
+      renderTable();
+      renderDashboard();
+    }
+    
+    // Update timer displays
+    renderTable();
+  }, 60000); // Check every minute
+}
+function sendExpiredNotification(email) {
+  // Find contact name if available
+  let recipientName = email.From;
+  const contact = contacts.find(c => c.email === email.From);
+  if (contact) {
+    recipientName = contact.name;
+  }
+  
+  const message = `⏰ EXPIRED EMAIL NOTIFICATION ⏰\n\n` +
+                 `Recipient: ${recipientName}\n` +
+                 `Email: ${email.From}\n` +
+                 `Subject: ${email.Subject}\n\n` +
+                 `This email has exceeded the response time. Please take immediate action.`;
+  
+  window.open(`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(message)}`, "_blank");
+  showToast("Expired email notification sent", "warning");
 }
 
 // ====== DASHBOARD ======
 function renderDashboard(){
-  const counts={Reply:0,"Follow-up":0,Closed:0}; emails.forEach(e=>{counts[e.Status]++;});
+  const counts={Reply:0,"Follow-up":0,Closed:0, Expired:0}; 
+  emails.forEach(e=>{counts[e.Status]++;});
+  
   document.getElementById("totalCount").innerText=emails.length;
   document.getElementById("replyCount").innerText=counts.Reply;
   document.getElementById("followCount").innerText=counts["Follow-up"];
   document.getElementById("closedCount").innerText=counts.Closed;
+  document.getElementById("expiredCount").innerText=counts.Expired;
+  
   const ctx=document.getElementById("dashboardChart").getContext("2d");
   if(window.dashboardChart) window.dashboardChart.destroy();
+  
   window.dashboardChart=new Chart(ctx,{
     type:"bar",
-    data:{labels:["Reply","Follow-up","Closed"],datasets:[{label:"Emails",data:[counts.Reply,counts["Follow-up"],counts.Closed],backgroundColor:['#16a34a','#f59e0b','#dc2626']}]},
+    data:{
+      labels:["Reply","Follow-up","Closed","Expired"], 
+      datasets:[{
+        label:"Emails",
+        data:[counts.Reply,counts["Follow-up"],counts.Closed,counts.Expired],
+        backgroundColor:['#16a34a','#f59e0b','#dc2626', '#6b7280']
+      }]
+    },
     options:{responsive:true,scales:{y:{beginAtZero:true}}}
   });
 }
@@ -206,13 +349,25 @@ function renderDashboard(){
 function showToast(msg,type){
   const toast=document.getElementById("toast");
   toast.innerText=msg;
-  toast.style.background= type==="success" ? "#16a34a" : type==="error" ? "#dc2626" : "#2563eb";
+  toast.style.background= type==="success" ? "#16a34a" : type==="error" ? "#dc2626" : type==="warning" ? "#f59e0b" : "#2563eb";
   toast.classList.add("show");
   setTimeout(()=>toast.classList.remove("show"),3000);
 }
 
 // INIT
-renderTable(); renderDashboard(); renderContacts();
+renderTable(); 
+renderDashboard(); 
+renderContacts();
+
+// Start timers on page load
+startTimers();
+
+// Clean up interval on page unload
+window.addEventListener('beforeunload', () => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
 </script>
 </body>
 </html>
